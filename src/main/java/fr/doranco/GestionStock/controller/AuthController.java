@@ -1,9 +1,6 @@
 package fr.doranco.GestionStock.controller;
 
-import fr.doranco.GestionStock.model.dto.LoginRequestDTO;
-import fr.doranco.GestionStock.model.dto.RegisterUserRequestDTO;
-import fr.doranco.GestionStock.model.dto.ResetPwdRequestDTO;
-import fr.doranco.GestionStock.model.dto.UserResponseDTO;
+import fr.doranco.GestionStock.model.dto.*;
 import fr.doranco.GestionStock.service.IAuthService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,5 +51,13 @@ public class AuthController implements IAuthController{
     public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPwdRequestDTO request) throws Exception {
         authService.resetPwd(request.token(), request.password());
         return ResponseEntity.ok(Map.of("message", "password reset successful"));
+    }
+
+    @Override
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(@Valid @RequestBody TokenRefreshRequest request) throws Exception {
+        authService.refreshToken(request.refreshToken());
+        return ResponseEntity.ok(Map.of("message", "Token refreshed successfully"));
+
     }
 }

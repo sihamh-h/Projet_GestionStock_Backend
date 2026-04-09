@@ -10,5 +10,7 @@ public interface IAuthService {
     UserResponseDTO registerUser(RegisterUserRequestDTO registerUserDTO) throws Exception;
 
     void resetPwd(String token, String newPassword) throws Exception;
+
+    UserResponseDTO refreshToken(String refreshToken) throws Exception;
 }
 

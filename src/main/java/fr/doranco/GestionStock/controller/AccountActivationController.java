@@ -3,6 +3,7 @@ package fr.doranco.GestionStock.controller;
 
 import fr.doranco.GestionStock.service.AccountActivateService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/rest/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AccountActivationController {
     private final AccountActivateService accountActivationService;
 
@@ -26,13 +28,12 @@ public class AccountActivationController {
         try {
             setupToken = accountActivationService.activateAccount(token);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            log.error("Account activation failed: {}", e.getMessage());
             return ResponseEntity.badRequest().body(Map.of("invalid token or user not found", e.getMessage()));
         } catch (IllegalStateException e) {
-            e.printStackTrace();
+            log.error("Account activation failed: {}", e.getMessage());
             return ResponseEntity.accepted().body(Map.of("account already activated", e.getMessage()));
         }
-        return ResponseEntity.ok(Map.of("message", "account activated successfully",
-                "setupToken", setupToken));
+        return ResponseEntity.ok(Map.of("message", "account activated successfully"));
     }
 }

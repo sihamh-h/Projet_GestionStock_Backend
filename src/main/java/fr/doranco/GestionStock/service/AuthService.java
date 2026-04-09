@@ -16,6 +16,7 @@ import fr.doranco.GestionStock.security.JwtService;
 import fr.doranco.GestionStock.security.encoderPwd.PasswordEncoderContext;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwt;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -66,14 +67,15 @@ public class AuthService implements IAuthService{
                 )
         );
 
-        boolean mustChangePassword = ((CustomUserDetails) authentication.getPrincipal()).isMustChangePassword();
-        System.out.println("Must change password: " + mustChangePassword);
-        if(mustChangePassword){
+        //boolean mustChangePassword = ((CustomUserDetails) authentication.getPrincipal()).isMustChangePassword();
+        CustomUserDetails userAuth = (CustomUserDetails) authentication.getPrincipal();
+        if(userAuth.isMustChangePassword()){
             throw new IllegalStateException("User must change password");
         }
 
-        CustomUserDetails userAuth = (CustomUserDetails) authentication.getPrincipal();
+        //CustomUserDetails userAuth = (CustomUserDetails) authentication.getPrincipal();
         String token = jwtService.generateToken(userAuth, TokenType.ACCESS);
+        String refreshToken = jwtService.generateToken(userAuth, TokenType.REFRESH);
 
         return UserResponseDTO.builder()
                 .id(userAuth.getId())
@@ -84,9 +86,12 @@ public class AuthService implements IAuthService{
                         .map(role -> role.getName().name())
                         .collect(Collectors.toSet()))
                 .token(token)
+                .refreshToken(refreshToken)
                 .build();
 
     }
+
+
 
     @Override
     @Transactional
@@ -126,6 +131,7 @@ public class AuthService implements IAuthService{
                 .roles(roleEntities)
                 .build();
         userRepository.save(user);
+
         String activationToken = jwtService.generateToken((new CustomUserDetails(user)), TokenType.ACTIVATION);
         emailService.sendEmail(user, activationToken, TokenType.ACTIVATION);
 
@@ -183,6 +189,28 @@ public class AuthService implements IAuthService{
 
 
     }
+
+    @Override
+    public UserResponseDTO refreshToken(String refreshToken) throws Exception {
+        Jws<Claims> jwt = jwtService.valideToken(refreshToken);
+        Claims claims = jwt.getPayload();
+        String type = jwt.getPayload().get("type", String.class);
+        if(!type.equals(TokenType.REFRESH.name()) || jwtService.isTokenExpired(refreshToken) ){
+            throw new IllegalAccessException("Invalid token: incorrect type or token expired");
+        }
+        String email = jwtService.extractUsername(refreshToken);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("User not found : " + email));
+        CustomUserDetails userDetails = new CustomUserDetails(user);
+        String newAccessToken = jwtService.generateToken(userDetails, TokenType.ACCESS);
+        String newRefreshToken = jwtService.generateToken(userDetails, TokenType.REFRESH);
+        return UserResponseDTO.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .token(newAccessToken)
+                .refreshToken(newRefreshToken)
+                .build();
     }
+}
 
 

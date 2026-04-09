@@ -17,8 +17,8 @@ public class JwtProperties {
     private Map<String, Long> tokens = new HashMap<>();
 
     public long getExpiration(TokenType type) {
-        long expiration = tokens.get(type.name());
-        if (expiration == 0) {
+        Long expiration = tokens.get(type.name());
+        if (expiration == null || expiration <= 0) {
             throw new IllegalArgumentException("Expiration time not defined for token type: " + type);
         }
         return expiration;

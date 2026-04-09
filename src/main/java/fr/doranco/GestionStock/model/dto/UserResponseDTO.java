@@ -20,4 +20,5 @@ public class UserResponseDTO {
     private String email;
     private Set<String> roles;
     private String token;
+    private String refreshToken;
 }
