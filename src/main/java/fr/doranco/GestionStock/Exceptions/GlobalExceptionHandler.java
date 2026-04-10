@@ -1,6 +1,8 @@
 package fr.doranco.GestionStock.Exceptions;
 
 
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,7 +18,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.management.relation.RoleNotFoundException;
 import java.net.URI;
+
 import java.util.List;
+import java.util.Map;
 
 @RestControllerAdvice
 @Slf4j
@@ -68,9 +72,9 @@ public class GlobalExceptionHandler {
    @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ProblemDetail> handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest request) {
 
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
 
-        problemDetail.setTitle("Conflict");
+        problemDetail.setTitle("Bad Request");
         problemDetail.setDetail(ex.getMessage());
         problemDetail.setInstance(URI.create(request.getRequestURI()));
         problemDetail.setProperty("error", ex.getMessage());
@@ -139,6 +143,35 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(problemDetail);
     }
+
+    @ExceptionHandler(IllegalAccessException.class)
+    public ResponseEntity<?> handleMonErreurDeType(IllegalAccessException e) {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(Map.of(
+                        "statut", "Security Exception",
+                        "message", e.getMessage()
+                ));
+    }
+
+    @ExceptionHandler(SignatureException.class)
+    public ResponseEntity<?> handleSignature(SignatureException e) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "Invalid token signature: " + e.getMessage()));
+    }
+
+    @ExceptionHandler(MalformedJwtException.class)
+    public ResponseEntity<?> handleMalformedJwt(MalformedJwtException e) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(Map.of(
+                        "error", "Malformed JWT",
+                        "message", "The provided JWT is not well-formed: " + e.getMessage()
+                ));
+    }
+
+
 
 
 }

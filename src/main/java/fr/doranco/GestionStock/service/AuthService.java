@@ -21,6 +21,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService implements IAuthService{
     @Autowired
     private IUserRepository userRepository;
@@ -193,10 +195,11 @@ public class AuthService implements IAuthService{
     @Override
     public UserResponseDTO refreshToken(String refreshToken) throws Exception {
         Jws<Claims> jwt = jwtService.valideToken(refreshToken);
-        Claims claims = jwt.getPayload();
         String type = jwt.getPayload().get("type", String.class);
         if(!type.equals(TokenType.REFRESH.name()) || jwtService.isTokenExpired(refreshToken) ){
+            log.error("Type error: {}, expect: REFRESH", type);
             throw new IllegalAccessException("Invalid token: incorrect type or token expired");
+
         }
         String email = jwtService.extractUsername(refreshToken);
         User user = userRepository.findByEmail(email)
