@@ -19,22 +19,19 @@ import java.util.Set;
 
 public class RegisterUserRequestDTO {
 
-    @Column(nullable = false, length = 50)
+
     @Size(min = 2, max = 50)
     @NotBlank(message = "name is obligatory")
     private String firstname;
 
-    @Column(nullable = false, length = 50)
     @Size(min = 2, max = 50)
     @NotBlank(message = "lastname is obligatory")
     private String lastname;
 
-    @Column(nullable = false, length = 50, unique = true)
     @NotBlank(message = "username is obligatory")
     @Size(min = 3, max = 50)
     private String username;
 
-    @Column(nullable = false, length = 50, unique = true)
     @NotBlank(message = "email is obligatory")
     @Size(min = 6, max = 50)
     @Pattern(
@@ -43,9 +40,6 @@ public class RegisterUserRequestDTO {
     )
     private String email;
 
-    @Column(nullable = false, length = 255)
-    //@NotBlank(message = "password is obligatory")
-    //@Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{12,}$", message = "Password must be at least 12 characters, contain uppercase, lowercase, number, and special character")
     @ValidPassword
     private String password;
 

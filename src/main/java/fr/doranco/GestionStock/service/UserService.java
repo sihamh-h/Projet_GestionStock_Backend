@@ -1,35 +1,52 @@
 package fr.doranco.GestionStock.service;
 
 import fr.doranco.GestionStock.Exceptions.AdminAlreadyExistsException;
+import fr.doranco.GestionStock.email.EmailService;
+import fr.doranco.GestionStock.enums.TokenType;
 import fr.doranco.GestionStock.enums.UserRole;
 import fr.doranco.GestionStock.model.dto.RegisterUserRequestDTO;
+import fr.doranco.GestionStock.model.dto.UserCreateDTO;
 import fr.doranco.GestionStock.model.dto.UserResponseDTO;
 import fr.doranco.GestionStock.model.entity.Role;
 import fr.doranco.GestionStock.model.entity.User;
 import fr.doranco.GestionStock.repository.IRoleRepository;
 import fr.doranco.GestionStock.repository.IUserRepository;
+import fr.doranco.GestionStock.security.CustomUserDetails;
+import fr.doranco.GestionStock.security.JwtService;
 import fr.doranco.GestionStock.security.encoderPwd.PasswordEncoderContext;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
+@RequiredArgsConstructor
+@Slf4j
 public class UserService implements IUserService {
 
 
-    @Autowired
-    private IUserRepository userRepository;
 
-    @Autowired
-    private  IRoleRepository roleRepository;
+    private final IUserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoderContext passwordEncoder;
+    private final IRoleRepository roleRepository;
+
+    private final PasswordEncoderContext passwordEncoder;
+
+    private final EmailService emailService;
+
+    private final JwtService jwtService;
+
+    @Value("${app.stock.max-admins:2}")
+    private int maxAdmins;
+
 
     @Override
     public List<User> getUsers() throws Exception {
@@ -63,9 +80,30 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public void deleteUser(long id) throws Exception {
+    @Transactional
+    public void deleteUser(Long id) throws Exception {
+        if(id == null || id <= 0) {
+            throw new IllegalArgumentException("User ID must be greater than zero or can not be null.");
+        }
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        boolean isAdmin = user.getRoles().stream()
+                .anyMatch(role -> role.getName().equals(UserRole.ROLE_ADMIN));
+
+        if (isAdmin) {
+            long adminCount = userRepository.countByRoles_Name(UserRole.ROLE_ADMIN);
+            if (adminCount <= 1) {
+                throw new IllegalStateException("Cannot delete the last remaining ADMIN user.");
+            }
+        }
+
+        userRepository.deleteById(id);
+        log.info("User with ID {} has been deleted.", id);
 
     }
+
+
 
     @Override
     public List<User> getUsersByRoleId(long roleId) throws Exception {
@@ -95,11 +133,11 @@ public class UserService implements IUserService {
 
     @Override
     @Transactional
-    public UserResponseDTO registerUser(RegisterUserRequestDTO registerUserDTO) throws Exception {
+    public UserResponseDTO createUser(UserCreateDTO registerUserDTO) throws Exception {
+
         if(registerUserDTO == null || registerUserDTO.getEmail() == null
                 || registerUserDTO.getEmail().isBlank() || registerUserDTO.getUsername() == null
-                || registerUserDTO.getUsername().isBlank() || registerUserDTO.getPassword() == null
-                || registerUserDTO.getPassword().isBlank() || registerUserDTO.getPhoneNumber() == null || registerUserDTO.getPhoneNumber().isBlank()
+                || registerUserDTO.getUsername().isBlank() || registerUserDTO.getPhoneNumber() == null || registerUserDTO.getPhoneNumber().isBlank()
                 || registerUserDTO.getRoles() == null || registerUserDTO.getRoles().isEmpty() || registerUserDTO.getLastname() == null || registerUserDTO.getLastname().isBlank() || registerUserDTO.getFirstname() == null || registerUserDTO.getFirstname().isBlank()) {
             throw new IllegalArgumentException("RegisterUser cannot be null.");
         }
@@ -109,9 +147,10 @@ public class UserService implements IUserService {
             throw new IllegalArgumentException("A user with the same username, email or phone number already exists.");
         }
 
-        if(registerUserDTO.getRoles().contains(UserRole.ROLE_ADMIN)&&
-                userRepository.existsByRoles_Name(UserRole.ROLE_ADMIN)) {
-            throw new AdminAlreadyExistsException("An ADMIN already exists");
+        long currentAdminCount = userRepository.countByRoles_Name(UserRole.ROLE_ADMIN);
+
+        if (currentAdminCount > maxAdmins) {
+            throw new AdminAlreadyExistsException("Maximum number of ADMIN users (" + maxAdmins + ") has already been reached.");
         }
 
         Set<Role> roleEntities = registerUserDTO.getRoles().stream()
@@ -119,18 +158,22 @@ public class UserService implements IUserService {
                         .orElseThrow(() -> new RuntimeException("Role not found: " + roleEnum)))
                 .collect(Collectors.toSet());
 
+        String temporaryPassword = generateSecurePassword();
 
         User user = User.builder()
                 .firstname(registerUserDTO.getFirstname())
                 .lastname(registerUserDTO.getLastname())
                 .username(registerUserDTO.getUsername())
                 .email(registerUserDTO.getEmail())
-                .password(passwordEncoder.hash(registerUserDTO.getPassword()))
+                .password(passwordEncoder.hash(temporaryPassword))
                 .phoneNumber(registerUserDTO.getPhoneNumber())
                 .birthdate(registerUserDTO.getBirthdate())
                 .roles(roleEntities)
                 .build();
         userRepository.save(user);
+
+        String activationToken = jwtService.generateToken((new CustomUserDetails(user)), TokenType.ACTIVATION);
+        emailService.sendEmail(user, activationToken, TokenType.ACTIVATION);
 
 
         return UserResponseDTO.builder()
@@ -144,8 +187,33 @@ public class UserService implements IUserService {
                                 .map(role -> role.getName().name())
                                 .collect(Collectors.toSet())
                 )
+                .token(activationToken)
                 .build();
-
     }
+
+    private String generateSecurePassword() {
+        String upperCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
+        String numbers = "0123456789";
+        String specialChars = "!@#$%^&*()-_=+";
+        String combinedChars = upperCaseLetters + lowerCaseLetters + numbers + specialChars;
+
+        SecureRandom random = new SecureRandom();
+        StringBuilder password = new StringBuilder();
+
+        password.append(upperCaseLetters.charAt(random.nextInt(upperCaseLetters.length())));
+        password.append(lowerCaseLetters.charAt(random.nextInt(lowerCaseLetters.length())));
+        password.append(numbers.charAt(random.nextInt(numbers.length())));
+        password.append(specialChars.charAt(random.nextInt(specialChars.length())));
+
+        for(int i = 4; i <= 12; i++) {
+            password.append(combinedChars.charAt(random.nextInt(combinedChars.length())));
+        }
+
+        return password.toString();
+    }
+
+
+
 }
 

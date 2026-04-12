@@ -16,18 +16,15 @@ import fr.doranco.GestionStock.security.JwtService;
 import fr.doranco.GestionStock.security.encoderPwd.PasswordEncoderContext;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwt;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
+
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,17 +34,17 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class AuthService implements IAuthService{
-    @Autowired
-    private IUserRepository userRepository;
 
-    @Autowired
-    private IRoleRepository roleRepository;
+    private final IUserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoderContext passwordEncoder;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final IRoleRepository roleRepository;
+
+
+    private final PasswordEncoderContext passwordEncoder;
+
+    private final AuthenticationManager authenticationManager;
+
     private final JwtService jwtService;
 
     private final EmailService emailService;

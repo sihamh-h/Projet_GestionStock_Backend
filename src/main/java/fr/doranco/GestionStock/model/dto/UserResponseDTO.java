@@ -1,6 +1,7 @@
 package fr.doranco.GestionStock.model.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import fr.doranco.GestionStock.enums.UserRole;
 
 import lombok.*;
@@ -13,6 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserResponseDTO {
     private Long id;
     private String firstname;
