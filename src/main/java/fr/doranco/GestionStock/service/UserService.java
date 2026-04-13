@@ -4,7 +4,7 @@ import fr.doranco.GestionStock.Exceptions.AdminAlreadyExistsException;
 import fr.doranco.GestionStock.email.EmailService;
 import fr.doranco.GestionStock.enums.TokenType;
 import fr.doranco.GestionStock.enums.UserRole;
-import fr.doranco.GestionStock.model.dto.RegisterUserRequestDTO;
+import fr.doranco.GestionStock.model.dto.UpdateUserDTO;
 import fr.doranco.GestionStock.model.dto.UserCreateDTO;
 import fr.doranco.GestionStock.model.dto.UserResponseDTO;
 import fr.doranco.GestionStock.model.entity.Role;
@@ -14,6 +14,7 @@ import fr.doranco.GestionStock.repository.IUserRepository;
 import fr.doranco.GestionStock.security.CustomUserDetails;
 import fr.doranco.GestionStock.security.JwtService;
 import fr.doranco.GestionStock.security.encoderPwd.PasswordEncoderContext;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,6 @@ import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -49,33 +49,93 @@ public class UserService implements IUserService {
 
 
     @Override
-    public List<User> getUsers() throws Exception {
-        return userRepository.findAll();
+    public List<UserResponseDTO> getUsers() throws Exception {
+            List<User> users = userRepository.findAll();
+            return users.stream()
+                    .map(user -> UserResponseDTO.builder()
+                            .id(user.getId())
+                            .firstname(user.getFirstname())
+                            .lastname(user.getLastname())
+                            .email(user.getEmail())
+                            .roles(
+                                    user.getRoles()
+                                            .stream()
+                                            .map(role -> role.getName().name())
+                                            .collect(Collectors.toSet())
+                            )
+                            .build())
+                    .collect(Collectors.toList());
+
     }
 
     @Override
-    public User getUser(long id) throws Exception {
+    public UserResponseDTO getUserById(Long id) throws Exception {
         if(id <= 0) {
             throw new IllegalArgumentException("User ID must be greater than zero.");
         }
-        Optional<User> user = userRepository.findById(id);
-        return user.orElse(null);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + id));
+        return mapToResponseDTO(user);
     }
 
-    @Override
-    public User getUser(String email) throws Exception {
-        if(email == null || email.isBlank()) {
-            throw new IllegalArgumentException("Email cannot be null or empty.");
-        }
-        return userRepository.findByEmail(email).orElse(null);
-    }
 
     @Override
-    public void addOrUpdateUser(User user) throws Exception {
-        if(user == null || user.getUsername() == null || user.getUsername().isBlank() || user.getEmail() == null
-                || user.getEmail().isBlank() ) {
-            throw new IllegalArgumentException("User cannot be null.");
+    public UserResponseDTO  updateUser(Long id, UpdateUserDTO updateUserDto) throws Exception {
+        if(id == null || id <= 0) {
+            throw new IllegalArgumentException("User ID must be greater than zero or can not be null.");
         }
+        if(updateUserDto == null || updateUserDto.getFirstname() == null || updateUserDto.getFirstname().isBlank()
+                || updateUserDto.getLastname() == null || updateUserDto.getLastname().isBlank()
+                || updateUserDto.getEmail() == null || updateUserDto.getEmail().isBlank()
+                ||updateUserDto.getPhoneNumber() == null || updateUserDto.getPhoneNumber().isBlank()
+                || updateUserDto.getBirthdate() == null || updateUserDto.getRoles() == null
+                || updateUserDto.getRoles().isEmpty()) {
+            throw new IllegalArgumentException("UpdateUserDTO and its fields cannot be null or empty.");
+        }
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + id));
+
+        if (userRepository.existsByEmailAndIdNot(updateUserDto.getEmail(), id)) {
+            throw new IllegalArgumentException("Email already exists");
+        }
+
+        if (userRepository.existsByPhoneNumberAndIdNot(updateUserDto.getPhoneNumber(), id)) {
+            throw new IllegalArgumentException("Phone number already exists");
+        }
+        user.setFirstname(updateUserDto.getFirstname());
+        user.setLastname(updateUserDto.getLastname());
+        user.setEmail(updateUserDto.getEmail());
+        user.setPhoneNumber(updateUserDto.getPhoneNumber());
+        user.setBirthdate(updateUserDto.getBirthdate());
+
+        boolean wasAdmin = user.getRoles().stream()
+                .anyMatch(r -> r.getName().equals(UserRole.ROLE_ADMIN));
+
+        boolean willBeAdmin = updateUserDto.getRoles().contains(UserRole.ROLE_ADMIN);
+
+        if (wasAdmin && !willBeAdmin) {
+            long adminCount = userRepository.countByRoles_Name(UserRole.ROLE_ADMIN);
+            if (adminCount <= 1) {
+                throw new IllegalStateException("Cannot remove ADMIN role from the last remaining admin.");
+            }
+        }
+
+        if (!wasAdmin && willBeAdmin) {
+            long adminCount = userRepository.countByRoles_Name(UserRole.ROLE_ADMIN);
+            if (adminCount > maxAdmins) {
+                throw new IllegalStateException("Maximum number of ADMIN users has been reached.");
+            }
+        }
+        Set<Role> roles = updateUserDto.getRoles().stream()
+                .map(roleName -> roleRepository.findByName(roleName)
+                        .orElseThrow(() -> new IllegalArgumentException("Invalid role: " + roleName)))
+                .collect(Collectors.toSet());
+
+        user.setRoles(roles);
+        userRepository.save(user);
+        return mapToResponseDTO(user);
+
+
 
     }
 
@@ -105,31 +165,7 @@ public class UserService implements IUserService {
 
 
 
-    @Override
-    public List<User> getUsersByRoleId(long roleId) throws Exception {
-        return List.of();
-    }
 
-    @Override
-    public String getRoleByUserId(long userId) throws Exception {
-        return "";
-    }
-
-    @Override
-    public List<String> getPermissionsByUserId(long userId) throws Exception {
-        return List.of();
-    }
-
-    @Override
-    public int countUsersByRoleId(long roleId) throws Exception {
-        return 0;
-    }
-
-    @Override
-    public void createAdmin(User admin) throws Exception {
-
-
-    }
 
     @Override
     @Transactional
@@ -211,6 +247,21 @@ public class UserService implements IUserService {
         }
 
         return password.toString();
+    }
+
+    private UserResponseDTO mapToResponseDTO(User user) {
+        return UserResponseDTO.builder()
+                .id(user.getId())
+                .firstname(user.getFirstname())
+                .lastname(user.getLastname())
+                .email(user.getEmail())
+                .roles(
+                        user.getRoles()
+                                .stream()
+                                .map(role -> role.getName().name())
+                                .collect(Collectors.toSet())
+                )
+                .build();
     }
 
 

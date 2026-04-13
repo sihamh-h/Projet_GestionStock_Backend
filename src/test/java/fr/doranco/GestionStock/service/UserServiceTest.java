@@ -4,6 +4,7 @@ import fr.doranco.GestionStock.Exceptions.AdminAlreadyExistsException;
 import fr.doranco.GestionStock.email.EmailService;
 import fr.doranco.GestionStock.enums.TokenType;
 import fr.doranco.GestionStock.enums.UserRole;
+import fr.doranco.GestionStock.model.dto.UpdateUserDTO;
 import fr.doranco.GestionStock.model.dto.UserCreateDTO;
 import fr.doranco.GestionStock.model.dto.UserResponseDTO;
 import fr.doranco.GestionStock.model.entity.Role;
@@ -12,6 +13,7 @@ import fr.doranco.GestionStock.repository.IRoleRepository;
 import fr.doranco.GestionStock.repository.IUserRepository;
 import fr.doranco.GestionStock.security.JwtService;
 import fr.doranco.GestionStock.security.encoderPwd.PasswordEncoderContext;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -155,15 +158,39 @@ public class UserServiceTest {
                 .build();
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(lastAdmin));
-        // On simule qu'il n'en reste qu'un seul en base
         when(userRepository.countByRoles_Name(UserRole.ROLE_ADMIN)).thenReturn(1L);
 
-        // WHEN & THEN
         assertThrows(IllegalStateException.class, () -> {
             userService.deleteUser(1L);
         });
 
-        // On vérifie que la méthode delete n'a JAMAIS été appelée
         verify(userRepository, never()).delete(any());
+    }
+
+    @Test
+    void testUpdateUserSuccessfully() throws Exception {
+        Long userId = 1L;
+        UpdateUserDTO dto = new UpdateUserDTO("Jean", "Dupont", "jean@test.com", "0102030405", LocalDate.of(1990,1,1), Set.of(UserRole.ROLE_MANAGER));
+
+        User existingUser = User.builder().id(userId).roles(new HashSet<>()).build();
+        Role role = new Role(1L, UserRole.ROLE_MANAGER,"Manager Role" , null);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
+        when(roleRepository.findByName(UserRole.ROLE_MANAGER)).thenReturn(Optional.of(role));
+        when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        UserResponseDTO result = userService.updateUser(userId, dto);
+
+        assertEquals("Jean", result.getFirstname());
+        verify(userRepository).save(any(User.class));
+    }
+
+    @Test
+    void tastUpdateUserWhenUserNotFound() {
+        Long userId = 1L;
+        UpdateUserDTO dto = new UpdateUserDTO("Jean", "Dupont", "jean@mail.com", "0102030405", LocalDate.of(1990,1,1), Set.of(UserRole.ROLE_MANAGER));
+
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> userService.updateUser(userId, dto));
     }
 }
