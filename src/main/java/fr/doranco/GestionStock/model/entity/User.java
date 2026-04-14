@@ -1,13 +1,12 @@
 package fr.doranco.GestionStock.model.entity;
 
 
-import fr.doranco.GestionStock.security.pwd.ValidPassword;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.validator.constraints.Length;
-
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,6 +15,8 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 @Getter @Setter @Builder @AllArgsConstructor @NoArgsConstructor
+@SQLDelete(sql = "UPDATE users SET deleted = true WHERE id = ?")
+@SQLRestriction("deleted = false")
 
 public class User extends Auditable {
     @Id
