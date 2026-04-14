@@ -27,6 +27,6 @@ public class Category extends Auditable {
     @Column(length = 255)
     private String description;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
-    private Set<Product> products = new HashSet<>();
+   /* @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    private Set<Product> products = new HashSet<>();*/
 }

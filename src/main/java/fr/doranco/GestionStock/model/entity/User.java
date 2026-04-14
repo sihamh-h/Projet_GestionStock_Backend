@@ -8,14 +8,16 @@ import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 
 @Entity
 @Table(name = "users")
-@Getter @Setter @Builder @AllArgsConstructor @NoArgsConstructor
-@SQLDelete(sql = "UPDATE users SET deleted = true WHERE id = ?")
+@Getter @Setter @Builder @AllArgsConstructor @NoArgsConstructor @ToString
+
 @SQLRestriction("deleted = false")
 
 public class User extends Auditable {
@@ -57,9 +59,7 @@ public class User extends Auditable {
     @Past(message = "birthdate must be in the past")
     private LocalDate birthdate;
 
-    @Column(name = "phone_number", length = 20, unique = true, nullable = false)
-    @NotBlank(message = "phone number is obligatory")
-    @Pattern( regexp = "^(?:(?:\\+|00)33|0)\\s*[1-9](?:[\\s.-]*\\d{2}){4}$", message = "Phone number must be a valid French number")
+    @Column(name = "phone_number", length = 20, unique = true, nullable = true)
     private String phoneNumber;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -77,7 +77,31 @@ public class User extends Auditable {
     @Column(name = "must_change_password")
     private boolean mustChangePassword = true;
 
+    @Column(name = "anonymized_at")
+    private LocalDateTime anonymizedAt;
 
 
+    public void anonymize() {
+        String suffix = (this.getId() != null) ? this.getId().toString() : UUID.randomUUID().toString().substring(0, 8);
+        String technicalId = "deleted_" + suffix;
+
+        this.setUsername(technicalId);
+        this.email = technicalId + "@deleted.com";
+
+
+        this.setFirstname("Anonymize");
+        this.lastname = "User";
+
+
+        this.phoneNumber = null;
+
+        this.password = "{archived}" + UUID.randomUUID();
+
+        if (this.roles != null) {
+            this.roles.clear();
+        }
+
+        this.anonymizedAt = LocalDateTime.now();
+    }
 
 }

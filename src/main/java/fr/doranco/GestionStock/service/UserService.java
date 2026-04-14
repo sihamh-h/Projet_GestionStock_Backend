@@ -157,8 +157,9 @@ public class UserService implements IUserService {
                 throw new IllegalStateException("Cannot delete the last remaining ADMIN user.");
             }
         }
-
-        userRepository.deleteById(id);
+        user.setDeleted(true);
+        user.setEnabled(false);
+        userRepository.save(user);
         log.info("User with ID {} has been deleted.", id);
 
     }

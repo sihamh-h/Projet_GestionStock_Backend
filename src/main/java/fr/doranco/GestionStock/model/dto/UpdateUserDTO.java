@@ -1,10 +1,7 @@
 package fr.doranco.GestionStock.model.dto;
 
 import fr.doranco.GestionStock.enums.UserRole;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -25,6 +22,7 @@ public class UpdateUserDTO {
     private String email;
 
     @NotBlank(message = "Phone number cannot be empty")
+    @Pattern( regexp = "^(?:(?:\\+|00)33|0)\\s*[1-9](?:[\\s.-]*\\d{2}){4}$", message = "Phone number must be a valid French number")
     private String phoneNumber;
 
     @NotNull(message = "Birthdate is required")

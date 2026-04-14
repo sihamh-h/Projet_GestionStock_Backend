@@ -186,7 +186,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void tastUpdateUserWhenUserNotFound() {
+    void testUpdateUserWhenUserNotFound() {
         Long userId = 1L;
         UpdateUserDTO dto = new UpdateUserDTO("Jean", "Dupont", "jean@mail.com", "0102030405", LocalDate.of(1990,1,1), Set.of(UserRole.ROLE_MANAGER));
 
