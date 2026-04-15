@@ -1,32 +1,45 @@
 package fr.doranco.GestionStock.repository;
 
 import fr.doranco.GestionStock.enums.UserRole;
-import fr.doranco.GestionStock.model.entity.Permission;
-import fr.doranco.GestionStock.model.entity.Role;
+
 import fr.doranco.GestionStock.model.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
+
 
 @Repository
 public interface IUserRepository extends JpaRepository<User, Long> {
-        Optional<User> findByUsernameIgnoreCase(String username) ;
-        Optional<User> findByEmail(String email) ;
-        Optional<User> findByPhoneNumber(String phoneNumber) ;
+        Optional<User> findByEmail(String email);
 
         boolean existsByEmail(String email);
+
         boolean existsByUsername(String username);
+
         boolean existsByPhoneNumber(String phoneNumber);
 
 
-        @Query("SELECT count(u) FROM User u JOIN u.roles r WHERE r.name = :roleName")
-        long countUserByRole(@Param("roleName") UserRole roleName);
-
-
         boolean existsByRoles_Name(UserRole userRole);
+
+        long countByRoles_Name(UserRole roleName);
+
+        boolean existsByEmailAndIdNot(String email, Long id);
+
+        boolean existsByPhoneNumberAndIdNot(String phoneNumber, Long id);
+        // Query propre, sémantique, robuste
+        @Query(value = """
+                            SELECT * FROM users
+                            WHERE deleted = true
+                            AND updated_at <= :limitDate
+                            AND anonymized_at IS NULL
+                            """, nativeQuery = true)
+        List<User> findUsersReadyForAnonymization(@Param("limitDate") LocalDateTime limitDate);
 }
+

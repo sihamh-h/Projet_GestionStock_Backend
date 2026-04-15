@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 public class PasswordEncoderContext {
     private final IPasswordEncoderStrategy strategy;
 
-    // @Primary injecte automatiquement la bonne stratégie
+
     public PasswordEncoderContext(IPasswordEncoderStrategy strategy) {
         this.strategy = strategy;
     }

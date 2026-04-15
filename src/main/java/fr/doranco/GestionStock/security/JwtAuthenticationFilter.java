@@ -8,6 +8,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,6 +21,7 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
@@ -46,6 +48,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             // On n'accepte que les ACCESS tokens pour s'authentifier
             if (!TokenType.ACCESS.name().equals(type)) {
+                log.warn("[JWT] Tentative d'accès avec un token de type {} sur {}",
+                        type, request.getRequestURI());
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -55,7 +59,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-                if (!jwtService.isTokenExpired(token)) {
+                if (!jwtService.isTokenExpired(token) && userDetails.isEnabled()) {
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(
                                     userDetails, null, userDetails.getAuthorities());
@@ -66,6 +70,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         } catch (Exception e) {
             // Token invalide → on laisse passer sans authentifier
+            log.error("[JWT] Échec de l'authentification : {}", e.getMessage());
         }
 
         filterChain.doFilter(request, response);

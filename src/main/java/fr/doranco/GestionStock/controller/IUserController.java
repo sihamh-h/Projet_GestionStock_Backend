@@ -1,10 +1,19 @@
 package fr.doranco.GestionStock.controller;
 
 import fr.doranco.GestionStock.model.dto.RegisterUserRequestDTO;
-import fr.doranco.GestionStock.model.dto.UserResponseDTO;
+import fr.doranco.GestionStock.model.dto.UpdateUserDTO;
+import fr.doranco.GestionStock.model.dto.UserCreateDTO;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 public interface IUserController {
 
-    ResponseEntity<UserResponseDTO> registerUser(RegisterUserRequestDTO user)throws Exception;
+    ResponseEntity<?> createUser(UserCreateDTO user)throws Exception;
+    ResponseEntity<?> deleteUser( Long id) throws Exception;
+    ResponseEntity<?> getUserById( Long id) throws Exception;
+    ResponseEntity<?> getUsers() throws Exception;
+    ResponseEntity<?> updateUser( Long id, UpdateUserDTO dto) throws Exception;
+
 }
