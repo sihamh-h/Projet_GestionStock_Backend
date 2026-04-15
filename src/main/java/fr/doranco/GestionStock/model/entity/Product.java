@@ -5,13 +5,16 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "product")
 @Setter @Getter @NoArgsConstructor @AllArgsConstructor @Builder
+@SQLRestriction("deleted = false")
 public class Product extends Auditable {
 
     @Id
@@ -47,6 +50,8 @@ public class Product extends Auditable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
+
+    private LocalDateTime deletedAt;
 
 
 }
