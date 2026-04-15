@@ -2,7 +2,9 @@ package fr.doranco.GestionStock.model.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,19 +16,21 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@SQLRestriction("deleted = false")
 public class Category extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100, unique = true)
+    @Column(nullable = false, length = 50, unique = true)
+    @Size(min = 3, max = 50)
     @NotBlank
     private String name;
 
     @Column(length = 255)
     private String description;
 
-   /* @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
-    private Set<Product> products = new HashSet<>();*/
+   @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    private Set<Product> products = new HashSet<>();
 }

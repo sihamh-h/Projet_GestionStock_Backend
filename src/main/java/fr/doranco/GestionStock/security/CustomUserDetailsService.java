@@ -40,7 +40,8 @@ public class CustomUserDetailsService implements UserDetailsService {
                 user.getPassword(),
                 user.getRoles(),
                 user.isEnabled(),
-                user.isMustChangePassword()
+                user.isMustChangePassword(),
+                user.isDeleted()
         );
 
     }

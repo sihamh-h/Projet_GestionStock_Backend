@@ -1,10 +1,10 @@
 package fr.doranco.GestionStock.service;
 
-import fr.doranco.GestionStock.model.dto.RegisterUserRequestDTO;
+
 import fr.doranco.GestionStock.model.dto.UpdateUserDTO;
 import fr.doranco.GestionStock.model.dto.UserCreateDTO;
 import fr.doranco.GestionStock.model.dto.UserResponseDTO;
-import fr.doranco.GestionStock.model.entity.User;
+
 
 
 import java.util.List;
