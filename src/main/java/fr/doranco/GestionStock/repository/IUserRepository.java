@@ -33,13 +33,24 @@ public interface IUserRepository extends JpaRepository<User, Long> {
         boolean existsByEmailAndIdNot(String email, Long id);
 
         boolean existsByPhoneNumberAndIdNot(String phoneNumber, Long id);
-        // Query propre, sémantique, robuste
-        @Query(value = """
-                            SELECT * FROM users
-                            WHERE deleted = true
-                            AND updated_at <= :limitDate
-                            AND anonymized_at IS NULL
-                            """, nativeQuery = true)
+
+        @Query("SELECT u FROM User u LEFT JOIN FETCH u.roles WHERE u.email = :email")
+        Optional<User> findByEmailWithRoles(@Param("email") String email);
+
+        /*@Query(value = "SELECT * FROM users WHERE deleted = true AND updated_at <= :limitDate AND anonymized_at IS NULL", nativeQuery = true)*/
+        //List<User> findUsersReadyForAnonymization(@Param("limitDate") LocalDateTime limitDate);
+
+        @Query(value = " select  * from users where deleted = true and updated_at <= :limitDate and anonymized_at is null", nativeQuery = true)
         List<User> findUsersReadyForAnonymization(@Param("limitDate") LocalDateTime limitDate);
+
+        @Query(value = "SELECT COUNT(*) FROM users WHERE email = :email", nativeQuery = true)
+        Long countByEmailIncludingDeleted(@Param("email") String email);
+
+        @Query(value = "SELECT COUNT(*) FROM users WHERE username = :username", nativeQuery = true)
+        Long countByUsernameIncludingDeleted(@Param("username") String username);
+
+        @Query(value = "SELECT COUNT(*) FROM users WHERE phone_number = :phone", nativeQuery = true)
+        Long countByPhoneNumberIncludingDeleted(@Param("phone") String phone);
+
 }
 

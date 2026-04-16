@@ -122,7 +122,7 @@ public class UserService implements IUserService {
 
         if (!wasAdmin && willBeAdmin) {
             long adminCount = userRepository.countByRoles_Name(UserRole.ROLE_ADMIN);
-            if (adminCount > maxAdmins) {
+            if (adminCount >= maxAdmins) {
                 throw new IllegalStateException("Maximum number of ADMIN users has been reached.");
             }
         }
@@ -179,14 +179,14 @@ public class UserService implements IUserService {
             throw new IllegalArgumentException("RegisterUser cannot be null.");
         }
 
-        if(userRepository.existsByUsername(registerUserDTO.getUsername())
-                || userRepository.existsByEmail(registerUserDTO.getEmail()) || userRepository.existsByPhoneNumber(registerUserDTO.getPhoneNumber())) {
+        if(userRepository.countByUsernameIncludingDeleted(registerUserDTO.getUsername()) >0
+                || userRepository.countByEmailIncludingDeleted(registerUserDTO.getEmail())>0 || userRepository.countByPhoneNumberIncludingDeleted(registerUserDTO.getPhoneNumber())>0) {
             throw new IllegalArgumentException("A user with the same username, email or phone number already exists.");
         }
 
         long currentAdminCount = userRepository.countByRoles_Name(UserRole.ROLE_ADMIN);
 
-        if (currentAdminCount > maxAdmins) {
+        if (registerUserDTO.getRoles().contains(UserRole.ROLE_ADMIN) && currentAdminCount >= maxAdmins) {
             throw new AdminAlreadyExistsException("Maximum number of ADMIN users (" + maxAdmins + ") has already been reached.");
         }
 

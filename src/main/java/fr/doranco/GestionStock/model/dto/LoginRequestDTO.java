@@ -5,10 +5,13 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
+
 public class LoginRequestDTO {
 
     @NotBlank(message = "email is obligatory")

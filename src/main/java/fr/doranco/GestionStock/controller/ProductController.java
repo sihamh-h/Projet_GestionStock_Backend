@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,20 +21,23 @@ public class ProductController implements IProductController {
     private final IProductService productService;
 
     @Override
-    @PutMapping("/create")
+    @PostMapping("/create")
+    @PreAuthorize("hasAuthority('PRODUCT_CREATE')")
     public ResponseEntity<?> create(@Valid @RequestBody ProductRequestDTO request) throws Exception {
         ProductResponseDTO product = productService.createProduct(request);
-        return new ResponseEntity<>(request, HttpStatus.CREATED);
+        return new ResponseEntity<>(product, HttpStatus.CREATED);
     }
 
     @Override
     @GetMapping("/all")
+    @PreAuthorize("hasAuthority('PRODUCT_READ')")
     public ResponseEntity<?> getAllProducts() throws Exception {
         return ResponseEntity.ok(productService.getAllProducts());
     }
 
     @Override
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('PRODUCT_READ')")
     public ResponseEntity<?> getProductById(@PathVariable Long id) throws Exception {
         if(id < 0){
             return ResponseEntity.badRequest().body("Invalid product ID: " + id);
@@ -45,6 +49,7 @@ public class ProductController implements IProductController {
 
     @Override
     @PatchMapping("/{id}")
+    @PreAuthorize("hasAuthority('PRODUCT_UPDATE')")
     public ResponseEntity<?> updateProduct(@PathVariable Long id, @RequestBody ProductUpdateDTO dto) throws Exception {
         if(id < 0){
             return ResponseEntity.badRequest().body("Invalid product ID: " + id);
@@ -55,6 +60,7 @@ public class ProductController implements IProductController {
 
     @Override
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('PRODUCT_DELETE')")
     public ResponseEntity<?> deleteProduct(@PathVariable Long id) throws Exception {
         if(id < 0){
             return ResponseEntity.badRequest().body("Invalid product ID: " + id);

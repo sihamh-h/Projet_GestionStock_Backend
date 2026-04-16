@@ -4,12 +4,14 @@ import fr.doranco.GestionStock.enums.UserRole;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.Set;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class UpdateUserDTO {
     @NotBlank(message = "Firstname cannot be empty")
     private String firstname;

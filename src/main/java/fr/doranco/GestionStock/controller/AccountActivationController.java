@@ -34,6 +34,6 @@ public class AccountActivationController {
             log.error("Account activation failed: {}", e.getMessage());
             return ResponseEntity.accepted().body(Map.of("account already activated", e.getMessage()));
         }
-        return ResponseEntity.ok(Map.of("message", "account activated successfully"));
+        return ResponseEntity.ok(Map.of("message", "account activated successfully", "setupToken", setupToken));
     }
 }

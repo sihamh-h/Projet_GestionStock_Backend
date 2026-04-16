@@ -5,6 +5,7 @@ import fr.doranco.GestionStock.security.encoderPwd.PasswordEncoderContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -30,13 +31,27 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/rest/auth/**", "/api/rest/users/**", "/api/rest/category/**", "/api/rest/product/**").permitAll()
-                       // .requestMatchers("/api/rest/users/**").hasRole("ADMIN")
+                        .requestMatchers("/api/rest/auth/**").permitAll()
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/webjars/**"
+                        ).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/rest/users/**")
+                        .hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/rest/users/**")
+                        .hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/rest/users/**")
+                        .hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/rest/users/**")
+                        .hasRole("ADMIN")
                         .anyRequest().authenticated()
+
                 )
                 .addFilterBefore(jwtAuthenticationFilter,
                 org.springframework.security.web.authentication
-                        .UsernamePasswordAuthenticationFilter.class);;
+                        .UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

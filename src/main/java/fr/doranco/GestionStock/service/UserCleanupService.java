@@ -27,14 +27,15 @@ public class UserCleanupService {
 
         List<User> usersToAnonymize = userRepository.findUsersReadyForAnonymization(limitDate);
         if (usersToAnonymize.isEmpty()) {
-            log.info("Aucun utilisateur à anonymiser pour le moment...");
+            log.info("No users to anonymize at the moment...");
             return;
         }
 
         for (User user : usersToAnonymize) {
-            user.anonymize(); // Appel de ta méthode dans l'entité
+            log.info("Anonymizing user : {}", user.getUsername());
+            user.anonymize();
             userRepository.save(user);
-            log.info("L'utilisateur ID {} a été anonymisé après 30 jours de rétention.", user.getId());
+            log.info("User ID {} was anonymized after 30 days of retention", user.getId());
         }
     }
 
