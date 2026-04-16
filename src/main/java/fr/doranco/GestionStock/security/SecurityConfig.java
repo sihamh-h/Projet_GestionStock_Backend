@@ -16,7 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableMethodSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
     @Autowired
     private PasswordEncoderContext passwordEncoderContext;
@@ -46,6 +46,9 @@ public class SecurityConfig {
                         .hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/rest/users/**")
                         .hasRole("ADMIN")
+                        .requestMatchers("/api/rest/product/**").authenticated()
+                        .requestMatchers("/api/rest/movements/**").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE")
+
                         .anyRequest().authenticated()
 
                 )

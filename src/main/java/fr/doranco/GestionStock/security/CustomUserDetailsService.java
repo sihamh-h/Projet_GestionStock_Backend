@@ -12,8 +12,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 
+
 @Service
-@Transactional
+
 public class CustomUserDetailsService implements UserDetailsService {
     private final IUserRepository userRepository;
 
@@ -24,6 +25,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
+    @Transactional
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         if(email == null || email.isEmpty()) {
             throw new UsernameNotFoundException("Email cannot be null or empty");

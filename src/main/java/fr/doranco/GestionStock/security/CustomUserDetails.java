@@ -3,6 +3,7 @@ package fr.doranco.GestionStock.security;
 import fr.doranco.GestionStock.enums.UserRole;
 import fr.doranco.GestionStock.model.entity.Role;
 import fr.doranco.GestionStock.model.entity.User;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -50,15 +52,30 @@ public class CustomUserDetails  implements UserDetails {
         this.roles = user.getRoles();
         this.enabled = user.isEnabled();
         this.mustChangePassword = user.isMustChangePassword();
+        this.deleted = user.isDeleted();
     }
 
     @Override
+
     public Collection<? extends GrantedAuthority> getAuthorities() {
        // return authorities;
         //return List.of(new SimpleGrantedAuthority(role.name()));
-        return roles.stream()
+        /*return roles.stream()
                 .map(role -> new SimpleGrantedAuthority( role.getName().name()))
-                .toList();
+                .toList();*/
+
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        for (Role role : roles) {
+            // Ajoute le rôle avec le préfixe ROLE_ (requis par hasRole())
+            authorities.add(new SimpleGrantedAuthority( role.getName().name()));
+
+            // Ajoute toutes les permissions du rôle
+            role.getPermissions().forEach(permission ->
+                    authorities.add(new SimpleGrantedAuthority(permission.getName().name()))
+            );
+        }
+
+        return authorities;
 
     }
 

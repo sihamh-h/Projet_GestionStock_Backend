@@ -7,12 +7,20 @@ public enum UserPermission {
     USER_READ("View users"),
     USER_CREATE("Create a user"),
     USER_UPDATE("Update a user"),
-    USER_DELETE("Delete a user");
+    USER_DELETE("Delete a user"),
 
-    /*PRODUCT_READ("View products"),
+    PRODUCT_READ("View products"),
     PRODUCT_CREATE("Create a product"),
     PRODUCT_UPDATE("Update a product"),
-    PRODUCT_DELETE("Delete a product");*/
+    PRODUCT_DELETE("Delete a product"),
+
+    STOCK_READ("View stock"),
+    STOCK_CREATE("Add new products to stock"),
+    STOCK_UPDATE("Update stock information"),
+    STOCK_DELETE("Remove products from stock"),
+
+    MOVEMENT_RECORD("Record stock movements"),
+    INVENTORY_ADJUST("Adjust inventory quantities");
 
     private final String description;
 

@@ -34,7 +34,13 @@ public interface IUserRepository extends JpaRepository<User, Long> {
 
         boolean existsByPhoneNumberAndIdNot(String phoneNumber, Long id);
 
-        @Query("SELECT u FROM User u LEFT JOIN FETCH u.roles WHERE u.email = :email")
+        /*@Query("SELECT u FROM User u LEFT JOIN FETCH u.roles WHERE u.email = :email")
+        Optional<User> findByEmailWithRoles(@Param("email") String email);*/
+
+        @Query("SELECT u FROM User u " +
+                "LEFT JOIN FETCH u.roles r " +
+                "LEFT JOIN FETCH r.permissions " +
+                "WHERE u.email = :email")
         Optional<User> findByEmailWithRoles(@Param("email") String email);
 
         /*@Query(value = "SELECT * FROM users WHERE deleted = true AND updated_at <= :limitDate AND anonymized_at IS NULL", nativeQuery = true)*/

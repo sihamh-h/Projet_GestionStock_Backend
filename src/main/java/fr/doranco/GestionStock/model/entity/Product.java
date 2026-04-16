@@ -1,15 +1,17 @@
 package fr.doranco.GestionStock.model.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
+
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 
 
-import java.time.LocalDate;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "product")
@@ -52,6 +54,9 @@ public class Product extends Auditable {
     private Category category;
 
     private LocalDateTime deletedAt;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Movement> movements = new ArrayList<>();
 
 
 }

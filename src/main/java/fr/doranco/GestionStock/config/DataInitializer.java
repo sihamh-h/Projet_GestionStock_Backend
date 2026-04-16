@@ -7,6 +7,7 @@ import fr.doranco.GestionStock.model.entity.Permission;
 import fr.doranco.GestionStock.model.entity.Role;
 import fr.doranco.GestionStock.repository.IPermissionRepository;
 import fr.doranco.GestionStock.repository.IRoleRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -19,13 +20,12 @@ import java.util.Set;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
 
-    @Autowired
-    private IPermissionRepository permissionRepository;
+    private final IPermissionRepository permissionRepository;
 
-    @Autowired
-    private IRoleRepository roleRepository;
+    private final IRoleRepository roleRepository;
 
     @Override
     @Transactional
