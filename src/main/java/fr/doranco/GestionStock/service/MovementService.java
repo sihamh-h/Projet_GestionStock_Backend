@@ -15,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -67,6 +69,42 @@ public class MovementService implements IMovementService {
         movementRepository.save(movement);
         productRepository.save(product);
 
+        return mapToResponseDTO(movement);
+    }
+
+    @Override
+    public List<MovementResponseDTO> getMovementsByUser(Long userId) throws Exception {
+        if(userId == null || userId < 0) {
+            log.error("[MOVEMENT] getMovementsByUser attempt with invalid userId: {}", userId);
+            throw new IllegalArgumentException("Invalid userId: " + userId);
+        }
+        List<Movement> movements = movementRepository.findByUserId(userId);
+        if(movements.isEmpty()) {
+            log.warn("[MOVEMENT] No movements found for user ID {}", userId);
+        }
+        return movements.stream().map(this::mapToResponseDTO).toList();
+    }
+
+    @Override
+    public List<MovementResponseDTO> getAllMovements() throws Exception {
+        List<MovementResponseDTO> movements = movementRepository.findAll().stream().map(this::mapToResponseDTO).toList();
+        if(movements.isEmpty()) {
+            log.warn("[MOVEMENT] No movements found in the system");
+         }
+
+        return movements;
+    }
+
+    @Override
+    public MovementResponseDTO getMovementById(Long id) throws Exception {
+        if(id == null || id < 0) {
+            log.error("[MOVEMENT] getMovementById attempt with invalid id: {}", id);
+            throw new IllegalArgumentException("Invalid movement ID: " + id);
+        }
+        Movement movement = movementRepository.findById(id).orElseThrow(() -> {
+            log.error("[MOVEMENT] Movement with ID {} not found", id);
+            return new EntityNotFoundException("Movement with ID " + id + " not found");
+        });
         return mapToResponseDTO(movement);
     }
 

@@ -20,7 +20,8 @@ public enum UserPermission {
     STOCK_DELETE("Remove products from stock"),
 
     MOVEMENT_RECORD("Record stock movements"),
-    INVENTORY_ADJUST("Adjust inventory quantities");
+    INVENTORY_ADJUST("Adjust inventory quantities"),
+    MOVEMENT_READ("View stock movements");
 
     private final String description;
 

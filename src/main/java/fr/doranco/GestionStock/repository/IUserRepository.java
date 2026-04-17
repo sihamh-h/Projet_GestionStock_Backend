@@ -2,6 +2,7 @@ package fr.doranco.GestionStock.repository;
 
 import fr.doranco.GestionStock.enums.UserRole;
 
+import fr.doranco.GestionStock.model.entity.Role;
 import fr.doranco.GestionStock.model.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,6 +59,8 @@ public interface IUserRepository extends JpaRepository<User, Long> {
 
         @Query(value = "SELECT COUNT(*) FROM users WHERE phone_number = :phone", nativeQuery = true)
         Long countByPhoneNumberIncludingDeleted(@Param("phone") String phone);
+
+        List<User> findAllByRolesIn(Collection<Role> roles);
 
 }
 
