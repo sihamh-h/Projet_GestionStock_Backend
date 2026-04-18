@@ -1,0 +1,135 @@
+package fr.doranco.GestionStock.service;
+
+import fr.doranco.GestionStock.enums.UserRole;
+import fr.doranco.GestionStock.model.dto.SupplierRequestDTO;
+import fr.doranco.GestionStock.model.dto.SupplierResponseDTO;
+import fr.doranco.GestionStock.model.entity.Supplier;
+import fr.doranco.GestionStock.model.entity.User;
+import fr.doranco.GestionStock.repository.ISupplierRepository;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+@Transactional
+@RequiredArgsConstructor
+@Slf4j
+public class SupplierService implements ISupplierService {
+    private final ISupplierRepository supplierRepository;
+
+
+    @Override
+    public SupplierResponseDTO create(SupplierRequestDTO request) throws Exception {
+        if (request == null) {
+            log.error("[SUPPLIER] Creation attempt with a null SupplierRequestDTO");
+            throw new IllegalArgumentException("SupplierRequestDTO cannot be null");
+        }
+        if (request.name() == null || request.email().isBlank()
+                || request.phone() == null || request.phone().isBlank() || request.number() == null || request.number().isBlank()) {
+            log.error("[SUPPLIER] Creation attempt with invalid data: {}", request);
+            throw new IllegalArgumentException("Invalid SupplierRequestDTO data: " + request);
+        }
+
+        if (supplierRepository.existsByNumberAndDeletedFalse(request.number()) || supplierRepository.existsBySiretAndDeletedFalse(request.siret())) {
+            log.error("[SUPPLIER] Creation attempt with duplicate number or siret: {}", request);
+            throw new IllegalArgumentException("Supplier with the same number or siret already exists");
+        }
+        Supplier supplier = Supplier.builder()
+                .name(request.name())
+                .email(request.email())
+                .phoneNumber(request.phone())
+                .number(request.number())
+                .siret(request.siret())
+                .website(request.website())
+                .companyName(request.companyName())
+                .address(request.address())
+                .build();
+        log.info("[SUPPLIER] Created new supplier with ID {}: {}", supplier.getId(), supplier);
+        return mapToResponse(supplier);
+    }
+
+    @Override
+    public List<SupplierResponseDTO> getAll() throws Exception {
+        return supplierRepository.findAllByDeletedFalse().stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    @Override
+    public SupplierResponseDTO getById(Long id) throws Exception {
+        return supplierRepository.findByIdAndDeletedFalse(id)
+                .map(this::mapToResponse)
+                .orElseThrow(() -> new EntityNotFoundException("Supplier not found with ID: " + id));
+    }
+
+    @Override
+    public SupplierResponseDTO update(Long id, SupplierRequestDTO request) throws Exception {
+        if(request == null) {
+            log.error("[SUPPLIER] Update attempt with a null SupplierRequestDTO for supplier ID {}", id);
+            throw new IllegalArgumentException("SupplierRequestDTO cannot be null");
+        }
+        Supplier supplier = supplierRepository.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> {
+                    log.error("[SUPPLIER] Supplier not found with ID {} for update", id);
+                    return new EntityNotFoundException("Supplier not found with ID: " + id);
+                });
+        if(request.number()!= null && !request.number().equals(supplier.getNumber())){
+            if(supplierRepository.existsByNumberAndDeletedFalse(request.number())) {
+                log.error("[SUPPLIER] Update attempt with duplicate number '{}' for supplier ID {}", request.number(), id);
+                throw new IllegalArgumentException("Supplier with number " + request.number() + " already exists");
+            }
+        }
+        if(request.siret() != null && !request.siret().equals(supplier.getSiret())){
+            if(supplierRepository.existsBySiretAndDeletedFalse(request.siret())) {
+                log.error("[SUPPLIER] Update attempt with duplicate siret '{}' for supplier ID {}", request.siret(), id);
+                throw new IllegalArgumentException("Supplier with siret " + request.siret() + " already exists");
+            }
+        }
+        supplier.setName(request.name());
+        supplier.setCompanyName(request.companyName());
+        supplier.setWebsite(request.website());
+        supplier.setSiret(request.siret());
+        supplier.setEmail(request.email());
+        supplier.setPhoneNumber(request.phone());
+        supplier.setAddress(request.address());
+        supplier.setNumber(request.number());
+
+        return mapToResponse(supplierRepository.save(supplier));
+    }
+
+    @Override
+    public void delete(Long id) throws Exception {
+        if(id == null || id <= 0) {
+            throw new IllegalArgumentException("supplier ID must be greater than zero or can not be null.");
+        }
+        Supplier supplier = supplierRepository.findById(id)
+                .orElseThrow(() ->{
+                    log.error("[SUPPLIER] Supplier with ID {} not found for deletion", id);
+                    return new EntityNotFoundException("Supplier not found with ID: " + id);
+                });
+
+        supplier.setDeleted(true);
+        supplierRepository.save(supplier);
+        log.info("[SUPPLIER] Supplier with ID {} marked as deleted", id);
+    }
+
+
+    private SupplierResponseDTO mapToResponse(Supplier supplier) {
+        return SupplierResponseDTO.builder()
+                .id(supplier.getId())
+                .name(supplier.getName())
+                .email(supplier.getEmail())
+                .phone(supplier.getPhoneNumber())
+                .number(supplier.getNumber())
+                .companyName(supplier.getCompanyName())
+                .createdAt(supplier.getCreatedAt())
+                .createdBy(supplier.getCreatedBy())
+                .build();
+    }
+}
+

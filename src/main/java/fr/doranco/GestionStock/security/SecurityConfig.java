@@ -48,6 +48,8 @@ public class SecurityConfig {
                         .hasRole("ADMIN")
                         .requestMatchers("/api/rest/product/**").authenticated()
                         .requestMatchers("/api/rest/movements/**").authenticated()
+                        .requestMatchers("/api/rest/supplier/**").authenticated()
+
 
                         .anyRequest().authenticated()
 

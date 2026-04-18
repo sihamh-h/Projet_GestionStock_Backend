@@ -21,7 +21,12 @@ public enum UserPermission {
 
     MOVEMENT_RECORD("Record stock movements"),
     INVENTORY_ADJUST("Adjust inventory quantities"),
-    MOVEMENT_READ("View stock movements");
+    MOVEMENT_READ("View stock movements"),
+
+    SUPPLIER_READ("View suppliers"),
+    SUPPLIER_CREATE("Create a supplier"),
+    SUPPLIER_UPDATE("Update a supplier"),
+    SUPPLIER_DELETE("Delete a supplier");
 
     private final String description;
 
