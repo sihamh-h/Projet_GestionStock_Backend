@@ -26,7 +26,17 @@ public enum UserPermission {
     SUPPLIER_READ("View suppliers"),
     SUPPLIER_CREATE("Create a supplier"),
     SUPPLIER_UPDATE("Update a supplier"),
-    SUPPLIER_DELETE("Delete a supplier");
+    SUPPLIER_DELETE("Delete a supplier"),
+
+    ORDER_READ("View orders"),
+    ORDER_CREATE("Create an order"),
+    ORDER_UPDATE("Update an order"),
+    ORDER_DELETE("Delete an order"),
+
+    CATEGORY_READ("View categories"),
+    CATEGORY_CREATE("Create a category"),
+    CATEGORY_UPDATE("Update a category"),
+    CATEGORY_DELETE("Delete a category");
 
     private final String description;
 

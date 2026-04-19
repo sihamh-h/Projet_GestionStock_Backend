@@ -62,5 +62,8 @@ public interface IUserRepository extends JpaRepository<User, Long> {
 
         List<User> findAllByRolesIn(Collection<Role> roles);
 
+        @Query(value = "SELECT * FROM users WHERE email = :email OR username = :username OR phone_number = :phone LIMIT 1", nativeQuery = true)
+        Optional<User> findByEmailOrUsernameOrPhoneIncludingDeleted(String email, String username, String phone);
+
 }
 

@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,6 +22,7 @@ public class CategoryController implements ICategoryController {
 
     @Override
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('CATEGORY_CREATE')")
     public ResponseEntity<?> create(@Valid @RequestBody CategoryRequestDTO dto) throws Exception {
         CategoryResponseDTO created = categoryService.createCategory(dto);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
@@ -28,18 +30,21 @@ public class CategoryController implements ICategoryController {
 
     @Override
     @GetMapping("/all")
+    @PreAuthorize("hasAuthority('CATEGORY_READ')")
     public ResponseEntity<?> getAllCategories() throws Exception {
         return ResponseEntity.ok(categoryService.getAllCategories());
     }
 
     @Override
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('CATEGORY_READ')")
     public ResponseEntity<?> getCategoryById(@PathVariable  Long id) throws Exception {
         return ResponseEntity.ok(categoryService.getCategoryById(id));
     }
 
     @Override
     @PatchMapping("/{id}")
+    @PreAuthorize("hasAuthority('CATEGORY_UPDATE')")
     public ResponseEntity<?> updateCategory(@PathVariable  Long id,@RequestBody CategoryUpdateDTO dto) throws Exception {
         if(id < 0){
             return ResponseEntity.badRequest().body("Invalid category ID: " + id);
@@ -50,6 +55,7 @@ public class CategoryController implements ICategoryController {
 
     @Override
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('CATEGORY_DELETE')")
     public ResponseEntity<?> deleteCategory(@PathVariable Long id) throws Exception {
         if(id < 0){
             return ResponseEntity.badRequest().body("Invalid category ID: " + id);

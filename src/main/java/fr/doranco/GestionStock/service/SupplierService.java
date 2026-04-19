@@ -14,6 +14,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -35,22 +36,41 @@ public class SupplierService implements ISupplierService {
             throw new IllegalArgumentException("Invalid SupplierRequestDTO data: " + request);
         }
 
-        if (supplierRepository.existsByNumberAndDeletedFalse(request.number()) || supplierRepository.existsBySiretAndDeletedFalse(request.siret())) {
-            log.error("[SUPPLIER] Creation attempt with duplicate number or siret: {}", request);
-            throw new IllegalArgumentException("Supplier with the same number or siret already exists");
+        Optional<Supplier> existingSupplier = supplierRepository.findByNumberOrSiretIncludingDeleted(request.number(), request.siret());
+        if(existingSupplier.isPresent()) {
+            Supplier supplier = existingSupplier.get();
+            if(!supplier.isDeleted()) {
+                log.error("[SUPPLIER] Creation attempt with duplicate number or siret: {}", request);
+                throw new IllegalArgumentException("Supplier with the same number or siret already exists");
+            } else {
+                log.warn("[SUPPLIER] Creation attempt with number or siret of a deleted supplier. Restoring supplier with ID {}: {}", supplier.getId(), supplier);
+                supplier.setDeleted(false);
+                supplier.setName(request.name());
+                supplier.setCompanyName(request.companyName());
+                supplier.setWebsite(request.website());
+                supplier.setSiret(request.siret());
+                supplier.setEmail(request.email());
+                supplier.setPhoneNumber(request.phone());
+                supplier.setAddress(request.address());
+                supplier.setNumber(request.number());
+                return mapToResponse(supplierRepository.save(supplier));
+            }
+
         }
-        Supplier supplier = Supplier.builder()
+        Supplier supp  = Supplier.builder()
                 .name(request.name())
+                .companyName(request.companyName())
+                .website(request.website())
+                .siret(request.siret())
                 .email(request.email())
                 .phoneNumber(request.phone())
-                .number(request.number())
-                .siret(request.siret())
-                .website(request.website())
-                .companyName(request.companyName())
                 .address(request.address())
+                .number(request.number())
                 .build();
-        log.info("[SUPPLIER] Created new supplier with ID {}: {}", supplier.getId(), supplier);
-        return mapToResponse(supplier);
+        supplierRepository.save(supp);
+        log.info("[SUPPLIER] Created new supplier with ID {}: {}", supp.getId(), supp);
+        return mapToResponse(supp);
+
     }
 
     @Override

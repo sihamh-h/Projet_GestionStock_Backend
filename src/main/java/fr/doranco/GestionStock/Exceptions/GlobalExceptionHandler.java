@@ -179,11 +179,31 @@ public class GlobalExceptionHandler {
                 .body(Map.of("error", ex.getMessage()));
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
+   /* @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<?> handleDuplicate(DataIntegrityViolationException ex) {
         return ResponseEntity
                 .badRequest()
                 .body("Duplicate value: a supplier with this number, email or phone already exists");
+    }*/
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ProblemDetail> handleDataIntegrity(DataIntegrityViolationException ex, HttpServletRequest request) {
+
+        String rootMsg = ex.getRootCause() != null ? ex.getRootCause().getMessage() : ex.getMessage();
+
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+        problemDetail.setTitle("Database Conflict");
+        problemDetail.setInstance(URI.create(request.getRequestURI()));
+
+        if (rootMsg.contains("Duplicate entry")) {
+            problemDetail.setDetail("Cette valeur existe déjà dans la base de données (Doublon détecté).");
+            problemDetail.setProperty("database_error", rootMsg);
+        } else {
+            problemDetail.setDetail("Une contrainte d'intégrité a été violée.");
+            problemDetail.setProperty("error", rootMsg);
+        }
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(problemDetail);
     }
 
 

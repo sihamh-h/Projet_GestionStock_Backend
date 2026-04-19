@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.Set;
 
 @Repository
@@ -16,4 +17,7 @@ public interface IProductRepository extends JpaRepository<Product, Long> {
 
     @Query("SELECT p FROM Product p WHERE p.actualStock <= p.minStock")
     Set<Product> findLowStockProducts();
+
+    @Query(value = "SELECT * FROM product WHERE reference = :reference LIMIT 1", nativeQuery = true)
+    Optional<Product> findByReferenceIncludingDeleted(String reference);
 }

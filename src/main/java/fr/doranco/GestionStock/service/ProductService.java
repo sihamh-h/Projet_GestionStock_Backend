@@ -7,12 +7,14 @@ import fr.doranco.GestionStock.model.entity.Category;
 import fr.doranco.GestionStock.model.entity.Product;
 import fr.doranco.GestionStock.repository.ICategoryRepository;
 import fr.doranco.GestionStock.repository.IProductRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,14 +36,30 @@ public class ProductService implements IProductService {
             log.error("[PRODUCT] Creation attempt with invalid data: name={}, price={}, actualStock={}, categoryId={}, minStock={}", request.name(), request.price(), request.actualStock(), request.categoryId(), request.minStock());
             throw new IllegalArgumentException("Invalid product data: name, price, actualStock, categoryId and minStock must be provided and valid");
         }
-        if(productRepository.existsByReference(request.reference())){
-            log.warn("[PRODUCT] Creation failed: A product with reference '{}' already exists in the database.", request.reference());
-            throw new IllegalArgumentException("Product with reference " + request.reference() + " already exists");
+
+        Optional<Product> existingProduct = productRepository.findByReferenceIncludingDeleted(request.reference());
+
+        if(existingProduct.isPresent()) {
+            Product product = existingProduct.get();
+            if(!product.isDeleted()) {
+                log.error("[PRODUCT] Creation attempt with duplicate reference: {}", request.reference());
+                throw new IllegalArgumentException("Product with the same reference already exists");
+            } else {
+                log.warn("[PRODUCT] Creation attempt with reference of a deleted product. Restoring product with ID {}: {}", product.getId(), product);
+                product.setDeleted(false);
+                product.setName(request.name());
+                product.setPrice(request.price());
+                product.setActualStock(request.actualStock());
+                product.setMinStock(request.minStock());
+
+
+                Category category = findCategory(request.categoryId());
+                product.setCategory(category);
+                return mapToResponseDto(productRepository.save(product));
+            }
         }
-        Category category = categoryRepository.findById(request.categoryId()).orElseThrow(() -> {
-            log.warn("[PRODUCT] Creation failed: No category found with ID {}", request.categoryId());
-            return new IllegalArgumentException("Category with ID " + request.categoryId() + " not found");
-        });
+
+        Category category = findCategory(request.categoryId());
         Product product = Product.builder()
                 .name(request.name())
                 .price(request.price())
@@ -165,5 +183,12 @@ public class ProductService implements IProductService {
                 .imageUrl(product.getImageUrl())
                 .createdAt(product.getCreatedAt())
                 .build();
+    }
+    private Category findCategory(Long categoryId) {
+        return categoryRepository.findById(categoryId)
+                .orElseThrow(() -> {
+                    log.warn("[PRODUCT] Category not found with ID {}", categoryId);
+                    return new EntityNotFoundException("Category with ID " + categoryId + " not found");
+                });
     }
 }

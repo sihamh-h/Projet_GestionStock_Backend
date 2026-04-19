@@ -81,6 +81,9 @@ public class User extends Auditable {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Movement> movements = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Order> orders = new ArrayList<>();
+
 
     public void anonymize() {
         String suffix = (this.getId() != null) ? this.getId().toString() : UUID.randomUUID().toString().substring(0, 8);

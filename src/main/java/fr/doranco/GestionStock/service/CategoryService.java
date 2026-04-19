@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,10 +33,22 @@ public class CategoryService implements ICategoryService {
         if(request.name() == null || request.name().isBlank()){
             throw new IllegalArgumentException("Name is null or blank");
         }
-        if(categoryRepository.existsByName(request.name())){
-            log.warn("[CATEGORY] Creation failed: The category '{}' already exists in the database.", request.name());
-            throw new IllegalArgumentException("Category with name " + request.name() + " already exists");
+
+        Optional<Category> existingCategory = categoryRepository.findByNameIncludingDeleted(request.name());
+        if (existingCategory.isPresent()) {
+            Category category = existingCategory.get();
+
+            if (!category.isDeleted()) {
+                log.warn("[CATEGORY] Creation failed: '{}' already exists and is active.", request.name());
+                throw new IllegalArgumentException("Category with name " + request.name() + " already exists");
+            } else {
+                log.info("[CATEGORY] Restoring soft-deleted category: {}", request.name());
+                category.setDeleted(false);
+                category.setDescription(request.description());
+                return mapToResponseDto(categoryRepository.save(category));
+            }
         }
+
         Category category = Category.builder()
                 .name(request.name())
                 .description(request.description())

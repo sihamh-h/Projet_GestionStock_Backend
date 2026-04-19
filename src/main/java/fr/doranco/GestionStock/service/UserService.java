@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -168,7 +169,7 @@ public class UserService implements IUserService {
 
 
 
-    @Override
+   /* @Override
     @Transactional
     public UserResponseDTO createUser(UserCreateDTO registerUserDTO) throws Exception {
 
@@ -226,7 +227,112 @@ public class UserService implements IUserService {
                 )
                 .token(activationToken)
                 .build();
+    }*/
+
+    @Override
+    @Transactional
+    public UserResponseDTO createUser(UserCreateDTO registerUserDTO) throws Exception {
+
+        if(registerUserDTO == null || registerUserDTO.getEmail() == null
+                || registerUserDTO.getEmail().isBlank() || registerUserDTO.getUsername() == null
+                || registerUserDTO.getUsername().isBlank() || registerUserDTO.getPhoneNumber() == null || registerUserDTO.getPhoneNumber().isBlank()
+                || registerUserDTO.getRoles() == null || registerUserDTO.getRoles().isEmpty() || registerUserDTO.getLastname() == null || registerUserDTO.getLastname().isBlank() || registerUserDTO.getFirstname() == null || registerUserDTO.getFirstname().isBlank()) {
+            throw new IllegalArgumentException("RegisterUser cannot be null.");
+        }
+
+        Optional<User> existingUserOpt = userRepository.findByEmailOrUsernameOrPhoneIncludingDeleted(
+                registerUserDTO.getEmail(), registerUserDTO.getUsername(), registerUserDTO.getPhoneNumber());
+
+        if (existingUserOpt.isPresent()) {
+            User user = existingUserOpt.get();
+
+            if (!user.isDeleted()) {
+                throw new IllegalArgumentException("A user with the same username, email or phone number already exists.");
+            } else {
+                // --- RESTAURATION ---
+                log.warn("[USER] Restoring deleted user ID: {}", user.getId());
+                user.setDeleted(false);
+                //user.setEnabled(true); // Optionnel selon ton workflow d'activation
+                updateUserFields(user, registerUserDTO);
+
+                // Vérification admin si le compte restauré doit être ADMIN
+                if (registerUserDTO.getRoles().contains(UserRole.ROLE_ADMIN)) {
+                    checkAdminLimit();
+                }
+
+                return finalizeUserRegistration(user);
+            }
+        }
+
+        // 3. CRÉATION NORMALE
+        if (registerUserDTO.getRoles().contains(UserRole.ROLE_ADMIN)) {
+            checkAdminLimit();
+        }
+
+        User user = User.builder()
+                .firstname(registerUserDTO.getFirstname())
+                .lastname(registerUserDTO.getLastname())
+                .username(registerUserDTO.getUsername())
+                .email(registerUserDTO.getEmail())
+                .phoneNumber(registerUserDTO.getPhoneNumber())
+                .birthdate(registerUserDTO.getBirthdate())
+                .roles(mapRoles(registerUserDTO.getRoles()))
+                .build();
+
+        return finalizeUserRegistration(user);
     }
+
+    private UserResponseDTO finalizeUserRegistration(User user) {
+        // Sécurité : On génère toujours un nouveau mot de passe pour une création/restauration
+        String temporaryPassword = generateSecurePassword();
+        user.setPassword(passwordEncoder.hash(temporaryPassword));
+
+        userRepository.save(user);
+
+        // Token et Email
+        String activationToken = jwtService.generateToken(new CustomUserDetails(user), TokenType.ACTIVATION);
+        emailService.sendEmail(user, activationToken, TokenType.ACTIVATION);
+
+        log.info("[USER] Registration finalized for: {}", user.getEmail());
+
+        UserResponseDTO response = mapToResponseDTO(user);
+        response.setToken(activationToken); // On ajoute le token pour la réponse initiale
+        return response;
+    }
+
+    private void checkAdminLimit() throws AdminAlreadyExistsException {
+        long currentAdminCount = userRepository.countByRoles_Name(UserRole.ROLE_ADMIN);
+        if (currentAdminCount >= maxAdmins) {
+            throw new AdminAlreadyExistsException("Maximum number of ADMIN users reached.");
+        }
+    }
+
+    private Set<Role> mapRoles(Set<UserRole> roleEnums) {
+        return roleEnums.stream()
+                .map(roleEnum -> roleRepository.findByName(roleEnum)
+                        .orElseThrow(() -> new RuntimeException("Role not found: " + roleEnum)))
+                .collect(Collectors.toSet());
+    }
+
+    private void updateUserFields(User user, UserCreateDTO dto) {
+        user.setFirstname(dto.getFirstname());
+        user.setLastname(dto.getLastname());
+        user.setRoles(mapRoles(dto.getRoles()));
+        // On ne change pas l'email/username ici s'ils sont déjà uniques
+    }
+
+    private void validateCreateDTO(UserCreateDTO dto) {
+        if (dto == null || isBlank(dto.getEmail()) || isBlank(dto.getUsername())
+                || isBlank(dto.getFirstname()) || dto.getRoles() == null || dto.getRoles().isEmpty()) {
+            throw new IllegalArgumentException("Required user fields are missing.");
+        }
+    }
+
+    private boolean isBlank(String s) {
+        return s == null || s.isBlank();
+    }
+
+
 
     private String generateSecurePassword() {
         String upperCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";

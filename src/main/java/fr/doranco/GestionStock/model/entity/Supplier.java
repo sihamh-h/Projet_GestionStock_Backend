@@ -5,6 +5,9 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "suppliers")
 @Getter
@@ -53,4 +56,8 @@ public class Supplier extends Auditable {
     @Column(length = 100)
     @Size(max = 100, message = "Address must be at most 100 characters")
     private String address;
+
+    @OneToMany(mappedBy = "supplier", fetch = FetchType.LAZY)
+    private List<Order> orders = new ArrayList<>();
+
 }

@@ -49,6 +49,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/rest/product/**").authenticated()
                         .requestMatchers("/api/rest/movements/**").authenticated()
                         .requestMatchers("/api/rest/supplier/**").authenticated()
+                        .requestMatchers("/api/rest/category/**").authenticated()
 
 
                         .anyRequest().authenticated()
