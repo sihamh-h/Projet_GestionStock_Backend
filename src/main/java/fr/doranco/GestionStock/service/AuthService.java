@@ -189,6 +189,81 @@ public class AuthService implements IAuthService{
 
     }
 
+
+
+    /*@Override
+    @Transactional
+    public void initiatePasswordReset(String email) throws Exception {
+        // 1. Recherche de l'utilisateur
+        // On utilise Optional pour éviter les NullPointerException
+        Optional<User> userOpt = userRepository.findByEmail(email);
+
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+
+            // On ne génère un token que si l'utilisateur est actif ou en attente d'activation
+            if (user.isEnabled() || user.isMustChangePassword()) {
+
+                // 2. Génération d'un token PASSWORD_RESET (durée courte : 15 min conseillé)
+                String resetToken = jwtService.generateResetToken(user);
+
+                // 3. Envoi de l'email (Lien vers ton application Front)
+                // emailService.sendResetPasswordEmail(user.getEmail(), resetToken);
+
+                log.info("[AUTH] Demande de reset MDP envoyée pour : {}", email);
+                // Pour tes tests Postman si tu n'as pas de serveur mail :
+                log.debug("[DEBUG] Token généré : {}", resetToken);
+            }
+        }
+        // Note : On ne lève pas d'exception si l'email n'existe pas (Sécurité/Confidentialité)
+    }
+
+    @Override
+    @Transactional
+    public void resetPwd(String token, String newPassword) throws Exception {
+        // 1. Validation technique du token via ton JwtService
+        Jws<Claims> jwt = jwtService.valideToken(token);
+        String type = jwt.getPayload().get("type", String.class);
+
+        if (!"PASSWORD_RESET".equals(type)) {
+            throw new BadCredentialsException("Ce token n'est pas autorisé pour cette opération");
+        }
+
+        String email = jwtService.extractUsername(token);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé"));
+
+        // 2. Sécurité : Hachage du mot de passe
+        user.setPassword(passwordEncoder.hash(newPassword));
+
+        // 3. Gestion intelligente des Flags (Workflow Polyvalent)
+        if (user.isMustChangePassword()) {
+            // Flux Activation (1ère fois)
+            user.setMustChangePassword(false);
+            user.setEnabled(true);
+            log.info("[AUTH] Compte activé pour : {}", email);
+        } else {
+            // Flux Mot de passe oublié
+            log.info("[AUTH] Mot de passe réinitialisé pour : {}", email);
+        }
+
+        userRepository.save(user);
+    }*/
+
+    /*@PostMapping("/forgot-password")
+    @Override
+    public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequestDTO request) throws Exception {
+        authService.initiatePasswordReset(request.email());
+
+        // Message générique pour éviter l'énumération d'emails
+        return ResponseEntity.ok(Map.of(
+                "message", "Si cet email correspond à un compte, vous recevrez un lien de réinitialisation sous peu."
+        ));
+    }*/
+
+
+
+
     @Override
     public UserResponseDTO refreshToken(String refreshToken) throws Exception {
         Jws<Claims> jwt = jwtService.valideToken(refreshToken);

@@ -175,14 +175,39 @@ public class DataInitializer implements CommandLineRunner {
                 addPerm(perms, allPermissions, UserPermission.PRODUCT_READ);
                 addPerm(perms, allPermissions, UserPermission.PRODUCT_CREATE);
                 addPerm(perms, allPermissions, UserPermission.PRODUCT_UPDATE);
+                addPerm(perms, allPermissions, UserPermission.PRODUCT_DELETE);
+                addPerm(perms, allPermissions, UserPermission.CATEGORY_CREATE);
+                addPerm(perms, allPermissions, UserPermission.CATEGORY_UPDATE);
+                addPerm(perms, allPermissions, UserPermission.CATEGORY_DELETE);
+                addPerm(perms, allPermissions, UserPermission.CATEGORY_READ);
                 addPerm(perms, allPermissions, UserPermission.STOCK_READ);
+                addPerm(perms, allPermissions, UserPermission.STOCK_CREATE);
+                addPerm(perms, allPermissions, UserPermission.STOCK_UPDATE);
+                addPerm(perms, allPermissions, UserPermission.STOCK_DELETE);
+                addPerm(perms, allPermissions, UserPermission.STOCK_READ);
+                addPerm(perms, allPermissions, UserPermission.SUPPLIER_READ);
+                addPerm(perms, allPermissions, UserPermission.SUPPLIER_CREATE);
+                addPerm(perms, allPermissions, UserPermission.SUPPLIER_UPDATE);
+                addPerm(perms, allPermissions, UserPermission.SUPPLIER_DELETE);
+                addPerm(perms, allPermissions, UserPermission.ORDER_READ);
+                addPerm(perms, allPermissions, UserPermission.ORDER_CREATE);
+                addPerm(perms, allPermissions, UserPermission.ORDER_UPDATE);
+                addPerm(perms, allPermissions, UserPermission.ORDER_DELETE);
+                addPerm(perms, allPermissions, UserPermission.MOVEMENT_RECORD);
+                addPerm(perms, allPermissions, UserPermission.INVENTORY_ADJUST);
+                addPerm(perms, allPermissions, UserPermission.MOVEMENT_READ);
+
                 break;
 
             case ROLE_EMPLOYEE:
-                // L'employé ne peut que voir les produits et enregistrer des mouvements
                 addPerm(perms, allPermissions, UserPermission.PRODUCT_READ);
+                addPerm(perms, allPermissions, UserPermission.PRODUCT_CREATE);
+                addPerm(perms, allPermissions, UserPermission.PRODUCT_UPDATE);
+                addPerm(perms, allPermissions, UserPermission.PRODUCT_DELETE);
                 addPerm(perms, allPermissions, UserPermission.STOCK_READ);
                 addPerm(perms, allPermissions, UserPermission.MOVEMENT_RECORD);
+                addPerm(perms, allPermissions, UserPermission.INVENTORY_ADJUST);
+                addPerm(perms, allPermissions, UserPermission.MOVEMENT_READ);
                 break;
         }
         return perms;
