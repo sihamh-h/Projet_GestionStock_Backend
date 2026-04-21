@@ -196,6 +196,7 @@ public class DataInitializer implements CommandLineRunner {
                 addPerm(perms, allPermissions, UserPermission.MOVEMENT_RECORD);
                 addPerm(perms, allPermissions, UserPermission.INVENTORY_ADJUST);
                 addPerm(perms, allPermissions, UserPermission.MOVEMENT_READ);
+                addPerm(perms, allPermissions, UserPermission.SALE_CREATE);
 
                 break;
 
@@ -208,6 +209,7 @@ public class DataInitializer implements CommandLineRunner {
                 addPerm(perms, allPermissions, UserPermission.MOVEMENT_RECORD);
                 addPerm(perms, allPermissions, UserPermission.INVENTORY_ADJUST);
                 addPerm(perms, allPermissions, UserPermission.MOVEMENT_READ);
+                addPerm(perms, allPermissions, UserPermission.SALE_CREATE);
                 break;
         }
         return perms;

@@ -8,7 +8,7 @@ import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 
 
-
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +35,7 @@ public class Product extends Auditable {
     @Column(nullable = false)
     @PositiveOrZero(message = "Price must be positive or zero")
     @NotNull(message = "Price must not be null")
-    private Double price;
+    private BigDecimal price;
 
     @Column(name ="actual_stock", nullable = false)
     @NotNull(message = "Actual stock must not be null")

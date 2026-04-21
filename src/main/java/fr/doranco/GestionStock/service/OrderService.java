@@ -1,7 +1,9 @@
 package fr.doranco.GestionStock.service;
 
 
+import fr.doranco.GestionStock.enums.MovementType;
 import fr.doranco.GestionStock.enums.OrderStatus;
+import fr.doranco.GestionStock.enums.SourceType;
 import fr.doranco.GestionStock.model.dto.OrderLineRequestDTO;
 import fr.doranco.GestionStock.model.dto.OrderLineResponseDTO;
 import fr.doranco.GestionStock.model.dto.OrderRequestDTO;
@@ -31,6 +33,7 @@ public class OrderService implements IOrderService {
     private final ISupplierRepository supplierRepository;
     private final IUserRepository userRepository;
     private final IProductRepository productRepository;
+    private final MovementService movementService;
     @Override
     public OrderResponseDTO create(OrderRequestDTO dto) throws Exception {
         if(dto == null){
@@ -124,10 +127,13 @@ public class OrderService implements IOrderService {
         if(status == OrderStatus.RECEIVED) {
             log.info("[ORDER] Updating stock for order ID {}: status changed to RECEIVED", id);
             for (OrderLine line : order.getLines()) {
-                Product product = line.getProduct();
-                int newQuantity = product.getActualStock() + line.getQuantity();
-                product.setActualStock(newQuantity);
-                productRepository.save(product);
+                movementService.recordMovement(
+                        line.getProduct(),
+                        line.getQuantity(),
+                        MovementType.IN,
+                        SourceType.ORDER,
+                        order.getUser()
+                );
             }
         }
         order.setStatus(status);

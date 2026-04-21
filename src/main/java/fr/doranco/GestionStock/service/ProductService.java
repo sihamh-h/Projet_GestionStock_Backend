@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
@@ -32,7 +33,7 @@ public class ProductService implements IProductService {
             log.error("[PRODUCT] Creation attempt with a null request");
             throw new IllegalArgumentException("Request is null");
         }
-        if(request.reference() == null || request.name() == null || request.name().isBlank() || request.price() == null || request.price() < 0 || request.actualStock() == null || request.actualStock() < 0 || request.categoryId() == null || request.categoryId() < 0 || request.minStock() == null || request.minStock() < 0){
+        if(request.reference() == null || request.name() == null || request.name().isBlank() || request.price() == null || request.price().compareTo(BigDecimal.ZERO) < 0 || request.actualStock() == null || request.actualStock() < 0 || request.categoryId() == null || request.categoryId() < 0 || request.minStock() == null || request.minStock() < 0){
             log.error("[PRODUCT] Creation attempt with invalid data: name={}, price={}, actualStock={}, categoryId={}, minStock={}", request.name(), request.price(), request.actualStock(), request.categoryId(), request.minStock());
             throw new IllegalArgumentException("Invalid product data: name, price, actualStock, categoryId and minStock must be provided and valid");
         }

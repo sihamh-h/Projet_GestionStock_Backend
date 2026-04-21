@@ -36,7 +36,9 @@ public enum UserPermission {
     CATEGORY_READ("View categories"),
     CATEGORY_CREATE("Create a category"),
     CATEGORY_UPDATE("Update a category"),
-    CATEGORY_DELETE("Delete a category");
+    CATEGORY_DELETE("Delete a category"),
+
+    SALE_CREATE("Create a sale");
 
     private final String description;
 

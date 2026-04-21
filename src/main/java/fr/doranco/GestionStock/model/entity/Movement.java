@@ -1,6 +1,7 @@
 package fr.doranco.GestionStock.model.entity;
 
 import fr.doranco.GestionStock.enums.MovementType;
+import fr.doranco.GestionStock.enums.SourceType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -37,6 +38,13 @@ public class Movement extends Auditable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "source_type")
+    private SourceType sourceType;
+
+
+    private Long sourceId;
 
 
 }

@@ -1,6 +1,7 @@
 package fr.doranco.GestionStock.service;
 
 import fr.doranco.GestionStock.enums.MovementType;
+import fr.doranco.GestionStock.enums.SourceType;
 import fr.doranco.GestionStock.model.dto.MovementRequestDTO;
 import fr.doranco.GestionStock.model.dto.MovementResponseDTO;
 import fr.doranco.GestionStock.model.entity.Movement;
@@ -48,30 +49,37 @@ public class MovementService implements IMovementService {
                     return new IllegalArgumentException("User with ID " + currentUserId + " not found");
                 });
 
-        int quantity = dto.getQuantity();
-        if(dto.getType() == MovementType.OUT) {
-            if(product.getActualStock() < quantity){
-                log.error("[MOVEMENT] Insufficient stock for product ID {}: requested {}, available {}", dto.getProductId(), quantity, product.getActualStock());
-                throw new IllegalArgumentException("Insufficient stock for product ID " + dto.getProductId() + ": requested " + quantity + ", available " + product.getActualStock());
-            }
-            product.setActualStock((product.getActualStock() - quantity));
-        }
-        else {
-            product.setActualStock((product.getActualStock() + quantity));
-        }
-        Movement movement = Movement.builder()
-                .type(dto.getType())
-                .quantity(quantity)
-                .product(product)
-                .user(user)
-                .build();
-
-        movementRepository.save(movement);
-        productRepository.save(product);
+        Movement movement = recordMovement(product, dto.getQuantity(), dto.getType(),
+                SourceType.ADJUSTMENT, user);
 
         return mapToResponseDTO(movement);
     }
 
+
+    public Movement recordMovement(Product product, Integer quantity, MovementType type,
+                               SourceType source, User user) throws Exception {
+
+        if (type == MovementType.OUT) {
+            if (product.getActualStock() < quantity) {
+                log.error("[MOVEMENT] Insufficient stock for product ID {}: requested {}, available {}", product.getId(), quantity, product.getActualStock());
+                throw new IllegalArgumentException("Insufficient stock for product ID " + product.getId() + ": requested " + quantity + ", available " + product.getActualStock());
+            }
+            product.setActualStock(product.getActualStock() - quantity);
+        } else {
+            product.setActualStock(product.getActualStock() + quantity);
+        }
+        Movement movement = Movement.builder()
+                .type(type)
+                .quantity(quantity)
+                .product(product)
+                .user(user)
+                .sourceType(source)
+                .build();
+
+        productRepository.save(product);
+        return movementRepository.save(movement);
+
+    }
     @Override
     public List<MovementResponseDTO> getMovementsByUser(Long userId) throws Exception {
         if(userId == null || userId < 0) {
