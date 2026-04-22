@@ -38,6 +38,9 @@ public enum UserPermission {
     CATEGORY_UPDATE("Update a category"),
     CATEGORY_DELETE("Delete a category"),
 
+    ALERT_READ("View stock alerts"),
+    ALERT_RESOLVE("Resolve stock alerts"),
+
     SALE_CREATE("Create a sale");
 
     private final String description;

@@ -50,6 +50,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/rest/movements/**").authenticated()
                         .requestMatchers("/api/rest/supplier/**").authenticated()
                         .requestMatchers("/api/rest/category/**").authenticated()
+                        .requestMatchers("/api/alerts/**").authenticated()
 
 
                         .anyRequest().authenticated()

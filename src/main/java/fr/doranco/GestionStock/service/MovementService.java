@@ -2,6 +2,7 @@ package fr.doranco.GestionStock.service;
 
 import fr.doranco.GestionStock.enums.MovementType;
 import fr.doranco.GestionStock.enums.SourceType;
+import fr.doranco.GestionStock.event.LowStockEvent;
 import fr.doranco.GestionStock.model.dto.MovementRequestDTO;
 import fr.doranco.GestionStock.model.dto.MovementResponseDTO;
 import fr.doranco.GestionStock.model.entity.Movement;
@@ -13,6 +14,7 @@ import fr.doranco.GestionStock.repository.IUserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +28,7 @@ public class MovementService implements IMovementService {
     private final IMovementRepository movementRepository;
     private final IProductRepository productRepository;
     private final IUserRepository userRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public MovementResponseDTO createMovement(MovementRequestDTO dto, Long currentUserId) throws Exception {
@@ -77,7 +80,9 @@ public class MovementService implements IMovementService {
                 .build();
 
         productRepository.save(product);
-        return movementRepository.save(movement);
+        movementRepository.save(movement);
+        eventPublisher.publishEvent(new LowStockEvent(product));
+        return movement;
 
     }
     @Override
