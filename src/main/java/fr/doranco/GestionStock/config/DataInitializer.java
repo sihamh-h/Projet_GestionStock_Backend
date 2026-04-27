@@ -170,7 +170,6 @@ public class DataInitializer implements CommandLineRunner {
                 break;
 
             case ROLE_MANAGER:
-                // Le Manager peut lire les users et gérer les produits
                 addPerm(perms, allPermissions, UserPermission.USER_READ);
                 addPerm(perms, allPermissions, UserPermission.PRODUCT_READ);
                 addPerm(perms, allPermissions, UserPermission.PRODUCT_CREATE);
@@ -199,6 +198,7 @@ public class DataInitializer implements CommandLineRunner {
                 addPerm(perms, allPermissions, UserPermission.SALE_CREATE);
                 addPerm(perms, allPermissions, UserPermission.ALERT_READ);
                 addPerm(perms, allPermissions, UserPermission.ALERT_RESOLVE);
+                addPerm(perms, allPermissions, UserPermission.LOG_READ);
 
                 break;
 

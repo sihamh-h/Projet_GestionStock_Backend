@@ -5,8 +5,13 @@ import fr.doranco.GestionStock.model.dto.ProductResponseDTO;
 import fr.doranco.GestionStock.model.dto.ProductUpdateDTO;
 import fr.doranco.GestionStock.model.entity.Category;
 import fr.doranco.GestionStock.model.entity.Product;
+import fr.doranco.GestionStock.model.entity.User;
+import fr.doranco.GestionStock.mongo.dto.ActivityLogRequestDTO;
+import fr.doranco.GestionStock.mongo.service.IActivityLogService;
 import fr.doranco.GestionStock.repository.ICategoryRepository;
 import fr.doranco.GestionStock.repository.IProductRepository;
+import fr.doranco.GestionStock.repository.IUserRepository;
+import fr.doranco.GestionStock.utils.RequestUtils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -26,54 +31,84 @@ import java.util.stream.Collectors;
 public class ProductService implements IProductService {
     private final ICategoryRepository categoryRepository;
     private final IProductRepository productRepository;
+    private final IActivityLogService activityLogService;
+    private final IUserRepository userRepository;
 
     @Override
     public ProductResponseDTO createProduct(ProductRequestDTO request) throws Exception {
-        if(request == null){
-            log.error("[PRODUCT] Creation attempt with a null request");
-            throw new IllegalArgumentException("Request is null");
-        }
-        if(request.reference() == null || request.name() == null || request.name().isBlank() || request.price() == null || request.price().compareTo(BigDecimal.ZERO) < 0 || request.actualStock() == null || request.actualStock() < 0 || request.categoryId() == null || request.categoryId() < 0 || request.minStock() == null || request.minStock() < 0){
-            log.error("[PRODUCT] Creation attempt with invalid data: name={}, price={}, actualStock={}, categoryId={}, minStock={}", request.name(), request.price(), request.actualStock(), request.categoryId(), request.minStock());
-            throw new IllegalArgumentException("Invalid product data: name, price, actualStock, categoryId and minStock must be provided and valid");
-        }
-
-        Optional<Product> existingProduct = productRepository.findByReferenceIncludingDeleted(request.reference());
-
-        if(existingProduct.isPresent()) {
-            Product product = existingProduct.get();
-            if(!product.isDeleted()) {
-                log.error("[PRODUCT] Creation attempt with duplicate reference: {}", request.reference());
-                throw new IllegalArgumentException("Product with the same reference already exists");
-            } else {
-                log.warn("[PRODUCT] Creation attempt with reference of a deleted product. Restoring product with ID {}: {}", product.getId(), product);
-                product.setDeleted(false);
-                product.setName(request.name());
-                product.setPrice(request.price());
-                product.setActualStock(request.actualStock());
-                product.setMinStock(request.minStock());
-
-
-                Category category = findCategory(request.categoryId());
-                product.setCategory(category);
-                return mapToResponseDto(productRepository.save(product));
+        try {
+            if (request == null) {
+                log.error("[PRODUCT] Creation attempt with a null request");
+                throw new IllegalArgumentException("Request is null");
             }
-        }
+            if (request.reference() == null || request.name() == null || request.name().isBlank() || request.price() == null || request.price().compareTo(BigDecimal.ZERO) < 0 || request.actualStock() == null || request.actualStock() < 0 || request.categoryId() == null || request.categoryId() < 0 || request.minStock() == null || request.minStock() < 0) {
+                log.error("[PRODUCT] Creation attempt with invalid data: name={}, price={}, actualStock={}, categoryId={}, minStock={}", request.name(), request.price(), request.actualStock(), request.categoryId(), request.minStock());
+                throw new IllegalArgumentException("Invalid product data: name, price, actualStock, categoryId and minStock must be provided and valid");
+            }
 
-        Category category = findCategory(request.categoryId());
-        Product product = Product.builder()
-                .name(request.name())
-                .price(request.price())
-                .actualStock(request.actualStock())
-                .category(category)
-                .reference(request.reference())
-                .minStock(request.minStock())
-                .description(request.description())
-                .imageUrl(request.imageUrl())
-                .build();
-        Product savedProduct = productRepository.save(product);
-        log.info("[PRODUCT] Success: Product created with ID {}", savedProduct.getId());
-        return mapToResponseDto(savedProduct);
+            Optional<Product> existingProduct = productRepository.findByReferenceIncludingDeleted(request.reference());
+
+            if (existingProduct.isPresent()) {
+                Product product = existingProduct.get();
+                if (!product.isDeleted()) {
+                    log.error("[PRODUCT] Creation attempt with duplicate reference: {}", request.reference());
+                    throw new IllegalArgumentException("Product with the same reference already exists");
+                } else {
+                    log.warn("[PRODUCT] Creation attempt with reference of a deleted product. Restoring product with ID {}: {}", product.getId(), product);
+                    product.setDeleted(false);
+                    product.setName(request.name());
+                    product.setPrice(request.price());
+                    product.setActualStock(request.actualStock());
+                    product.setMinStock(request.minStock());
+
+                    Category category = findCategory(request.categoryId());
+                    product.setCategory(category);
+
+                    Product savedProduct = productRepository.save(product);
+
+                    activityLogService.log(ActivityLogRequestDTO.builder()
+                            .userId(savedProduct.getCreatedBy())
+                            .userEmail(RequestUtils.getCurrentUserEmail())
+                            .action("PRODUCT_CREATE")
+                            .description("created product with reference " + savedProduct.getReference())
+                            .success(true)
+                            .build());
+                    return mapToResponseDto(savedProduct);
+                }
+            }
+
+            Category category = findCategory(request.categoryId());
+            Product product = Product.builder()
+                    .name(request.name())
+                    .price(request.price())
+                    .actualStock(request.actualStock())
+                    .category(category)
+                    .reference(request.reference())
+                    .minStock(request.minStock())
+                    .description(request.description())
+                    .imageUrl(request.imageUrl())
+                    .build();
+            Product savedProduct = productRepository.save(product);
+            activityLogService.log(ActivityLogRequestDTO.builder()
+                    .userId(savedProduct.getCreatedBy())
+                    .userEmail(RequestUtils.getCurrentUserEmail())
+                    .action("PRODUCT_CREATE")
+                    .description("created product with reference " + savedProduct.getReference())
+                    .success(true)
+                    .build());
+            log.info("[PRODUCT] Success: Product created with ID {}", savedProduct.getId());
+            return mapToResponseDto(savedProduct);
+        } catch (Exception e) {
+            log.error("[PRODUCT] Failed to create product: {}", e.getMessage());
+            activityLogService.log(ActivityLogRequestDTO.builder()
+                    .userId(RequestUtils.getCurrentUserId())
+                    .userEmail(RequestUtils.getCurrentUserEmail())
+                    .action("PRODUCT_CREATE")
+                    .description("Échec création produit : " +request.name() + e.getMessage())
+                    .success(false)
+                    .build());
+            throw new Exception("Failed to create product", e);
+        }
     }
 
     @Override
@@ -99,75 +134,114 @@ public class ProductService implements IProductService {
 
     @Override
     public ProductResponseDTO updateProduct(Long id, ProductUpdateDTO dto) throws Exception {
-        if(id == null || id < 0){
-            log.error("[PRODUCT] Update attempt with invalid ID: {}", id);
-            throw new IllegalArgumentException("Invalid product ID: " + id);
-        }
-        if(dto == null) {
-            log.error("[PRODUCT] Update attempt with a null request");
-            throw new IllegalArgumentException("Request is null");
-        }
-        Product existingProduct = productRepository.findById(id).orElseThrow(() -> {
-            log.warn("[PRODUCT] Update failed: No product found with ID {}", id);
-            return new IllegalArgumentException("Product with ID " + id + " not found");
-        });
-        if(dto.reference() != null && !dto.reference().equals(existingProduct.getReference())){
-            if(productRepository.existsByReference(dto.reference())){
-                log.warn("[PRODUCT] Update failed: A product with reference '{}' already exists in the database.", dto.reference());
-                throw new IllegalArgumentException("Product with reference " + dto.reference() + " already exists");
+        try {
+            if (id == null || id < 0) {
+                log.error("[PRODUCT] Update attempt with invalid ID: {}", id);
+                throw new IllegalArgumentException("Invalid product ID: " + id);
             }
-            existingProduct.setReference(dto.reference());
-        }
-        if(dto.categoryId() != null && !dto.categoryId().equals(existingProduct.getCategory().getId())){
-            Category category = categoryRepository.findById(dto.categoryId()).orElseThrow(() -> {
-                log.warn("[PRODUCT] Update failed: No category found with ID {}", dto.categoryId());
-                return new IllegalArgumentException("Category with ID " + dto.categoryId() + " not found");
+            if (dto == null) {
+                log.error("[PRODUCT] Update attempt with a null request");
+                throw new IllegalArgumentException("Request is null");
+            }
+            Product existingProduct = productRepository.findById(id).orElseThrow(() -> {
+                log.warn("[PRODUCT] Update failed: No product found with ID {}", id);
+                return new IllegalArgumentException("Product with ID " + id + " not found");
             });
-            existingProduct.setCategory(category);
-        }
-        if (dto.name() != null) {
-            existingProduct.setName(dto.name());
-        }
+            if (dto.reference() != null && !dto.reference().equals(existingProduct.getReference())) {
+                if (productRepository.existsByReference(dto.reference())) {
+                    log.warn("[PRODUCT] Update failed: A product with reference '{}' already exists in the database.", dto.reference());
+                    throw new IllegalArgumentException("Product with reference " + dto.reference() + " already exists");
+                }
+                existingProduct.setReference(dto.reference());
+            }
+            if (dto.categoryId() != null && !dto.categoryId().equals(existingProduct.getCategory().getId())) {
+                Category category = categoryRepository.findById(dto.categoryId()).orElseThrow(() -> {
+                    log.warn("[PRODUCT] Update failed: No category found with ID {}", dto.categoryId());
+                    return new IllegalArgumentException("Category with ID " + dto.categoryId() + " not found");
+                });
+                existingProduct.setCategory(category);
+            }
+            if (dto.name() != null) {
+                existingProduct.setName(dto.name());
+            }
 
-        if (dto.description() != null) {
-            existingProduct.setDescription(dto.description());
-        }
+            if (dto.description() != null) {
+                existingProduct.setDescription(dto.description());
+            }
 
-        if (dto.price() != null) {
-            existingProduct.setPrice(dto.price());
-        }
+            if (dto.price() != null) {
+                existingProduct.setPrice(dto.price());
+            }
 
-        if (dto.actualStock() != null) {
-            existingProduct.setActualStock(dto.actualStock());
-        }
+            if (dto.actualStock() != null) {
+                existingProduct.setActualStock(dto.actualStock());
+            }
 
-        if (dto.minStock() != null) {
-            existingProduct.setMinStock(dto.minStock());
-        }
-        if(dto.imageUrl() != null) {
-            existingProduct.setImageUrl(dto.imageUrl());
-        }
+            if (dto.minStock() != null) {
+                existingProduct.setMinStock(dto.minStock());
+            }
+            if (dto.imageUrl() != null) {
+                existingProduct.setImageUrl(dto.imageUrl());
+            }
 
-        Product updatedProduct = productRepository.save(existingProduct);
-        log.info("[PRODUCT] Success: Product with ID {} updated", id);
-        return mapToResponseDto(updatedProduct);
+            Product updatedProduct = productRepository.save(existingProduct);
+            log.info("[PRODUCT] Success: Product with ID {} updated", id);
+
+            activityLogService.log(ActivityLogRequestDTO.builder()
+                    .userId(updatedProduct.getUpdatedBy())
+                    .userEmail(RequestUtils.getCurrentUserEmail())
+                    .action("PRODUCT_UPDATE")
+                    .description("updated product " + updatedProduct.getName())
+                    .success(true)
+                    .build());
+            return mapToResponseDto(updatedProduct);
+        } catch (Exception e) {
+            log.error("[PRODUCT] Failed to update product with ID {}: {}", id, e.getMessage());
+            activityLogService.log(ActivityLogRequestDTO.builder()
+                    .userId(RequestUtils.getCurrentUserId())
+                    .userEmail(RequestUtils.getCurrentUserEmail())
+                    .action("PRODUCT_UPDATE")
+                    .description("Échec mise à jour produit " + dto.name() + " : " + e.getMessage())
+                    .success(false)
+                    .build());
+            throw new Exception("Failed to update product with ID " + id, e);
+        }
 
     }
 
     @Override
     public void deleteProduct(Long id) throws Exception {
-        if(id == null || id < 0){
-            log.error("[PRODUCT] Deletion attempt with invalid ID: {}", id);
-            throw new IllegalArgumentException("Invalid product ID: " + id);
+        try {
+            if (id == null || id < 0) {
+                log.error("[PRODUCT] Deletion attempt with invalid ID: {}", id);
+                throw new IllegalArgumentException("Invalid product ID: " + id);
+            }
+            Product product = productRepository.findById(id).orElseThrow(() -> {
+                log.warn("[PRODUCT] Deletion failed: No product found with ID {}", id);
+                return new IllegalArgumentException("Product with ID " + id + " not found");
+            });
+            product.setDeleted(true);
+            product.setDeletedAt(LocalDateTime.now());
+            productRepository.save(product);
+            log.info("[PRODUCT] Success: Product with ID {} marked as deleted", id);
+
+            activityLogService.log(ActivityLogRequestDTO.builder()
+                    .userId(product.getUpdatedBy())
+                    .userEmail(RequestUtils.getCurrentUserEmail())
+                    .action("PRODUCT_DELETE")
+                    .description("deleted product: " + product.getName())
+                    .success(true)
+                    .build());
+        }catch (Exception e){
+            activityLogService.log(ActivityLogRequestDTO.builder()
+                    .userId(RequestUtils.getCurrentUserId())
+                    .userEmail(RequestUtils.getCurrentUserEmail())
+                    .action("PRODUCT_DELETE")
+                    .description("Échec suppression produit : " + e.getMessage())
+                    .success(false)
+                    .build());
+            throw e;
         }
-        Product product = productRepository.findById(id).orElseThrow(() -> {
-            log.warn("[PRODUCT] Deletion failed: No product found with ID {}", id);
-            return new IllegalArgumentException("Product with ID " + id + " not found");
-        });
-        product.setDeleted(true);
-        product.setDeletedAt(LocalDateTime.now());
-        productRepository.save(product);
-        log.info("[PRODUCT] Success: Product with ID {} marked as deleted", id);
     }
 
     private ProductResponseDTO mapToResponseDto(Product product) {

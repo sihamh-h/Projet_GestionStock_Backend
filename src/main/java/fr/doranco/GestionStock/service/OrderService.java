@@ -131,9 +131,8 @@ public class OrderService implements IOrderService {
                         line.getProduct(),
                         line.getQuantity(),
                         MovementType.IN,
-                        SourceType.ORDER,
-                        order.getUser()
-                );
+                        SourceType.ORDER
+                                   );
             }
         }
         order.setStatus(status);

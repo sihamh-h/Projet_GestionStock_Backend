@@ -31,7 +31,7 @@ public class MovementService implements IMovementService {
     private final ApplicationEventPublisher eventPublisher;
 
     @Override
-    public MovementResponseDTO createMovement(MovementRequestDTO dto, Long currentUserId) throws Exception {
+    public MovementResponseDTO createMovement(MovementRequestDTO dto) throws Exception {
         if(dto == null) {
             log.error("[MOVEMENT] Creation attempt with a null MovementRequestDTO");
             throw new IllegalArgumentException("MovementRequestDTO cannot be null");
@@ -46,21 +46,15 @@ public class MovementService implements IMovementService {
             return new IllegalArgumentException("Product with ID " + dto.getProductId() + " not found");
         });
 
-        User user = userRepository.findById(currentUserId)
-                .orElseThrow(() -> {
-                    log.error("[MOVEMENT] User with ID {} not found for movement creation", currentUserId);
-                    return new IllegalArgumentException("User with ID " + currentUserId + " not found");
-                });
-
         Movement movement = recordMovement(product, dto.getQuantity(), dto.getType(),
-                SourceType.ADJUSTMENT, user);
+                SourceType.ADJUSTMENT);
 
         return mapToResponseDTO(movement);
     }
 
 
     public Movement recordMovement(Product product, Integer quantity, MovementType type,
-                               SourceType source, User user) throws Exception {
+                               SourceType source) throws Exception {
 
         if (type == MovementType.OUT) {
             if (product.getActualStock() < quantity) {
@@ -75,7 +69,6 @@ public class MovementService implements IMovementService {
                 .type(type)
                 .quantity(quantity)
                 .product(product)
-                .user(user)
                 .sourceType(source)
                 .build();
 
@@ -85,6 +78,7 @@ public class MovementService implements IMovementService {
         return movement;
 
     }
+
     @Override
     public List<MovementResponseDTO> getMovementsByUser(Long userId) throws Exception {
         if(userId == null || userId < 0) {

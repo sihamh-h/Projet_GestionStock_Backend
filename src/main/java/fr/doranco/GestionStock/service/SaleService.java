@@ -67,7 +67,7 @@ public class SaleService implements ISaleService{
             total += line.quantity() * product.getPrice().floatValue();
             movementService.recordMovement(
                     product, line.quantity(), MovementType.OUT,
-                    SourceType.SALE, currentUser
+                    SourceType.SALE
             );
 
         }

@@ -26,14 +26,10 @@ public class ActivityLog {
 
     private String action;
 
-    private String entityId;
-
     private String description;
 
-    private String ipAddress;
-
     private LocalDateTime timestamp;
-    
+
     private boolean success;
 
 }

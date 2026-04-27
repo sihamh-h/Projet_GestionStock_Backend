@@ -9,6 +9,8 @@ import fr.doranco.GestionStock.model.dto.RegisterUserRequestDTO;
 import fr.doranco.GestionStock.model.dto.UserResponseDTO;
 import fr.doranco.GestionStock.model.entity.Role;
 import fr.doranco.GestionStock.model.entity.User;
+import fr.doranco.GestionStock.mongo.dto.ActivityLogRequestDTO;
+import fr.doranco.GestionStock.mongo.service.IActivityLogService;
 import fr.doranco.GestionStock.repository.IRoleRepository;
 import fr.doranco.GestionStock.repository.IUserRepository;
 import fr.doranco.GestionStock.security.CustomUserDetails;
@@ -49,6 +51,8 @@ public class AuthService implements IAuthService{
 
     private final EmailService emailService;
 
+    private final IActivityLogService activityLogService;
+
 
     @Override
     public UserResponseDTO login(LoginRequestDTO user) throws Exception{
@@ -66,13 +70,26 @@ public class AuthService implements IAuthService{
                 )
         );
 
-        //boolean mustChangePassword = ((CustomUserDetails) authentication.getPrincipal()).isMustChangePassword();
+
         CustomUserDetails userAuth = (CustomUserDetails) authentication.getPrincipal();
         if(userAuth.isMustChangePassword()){
+            activityLogService.log(ActivityLogRequestDTO.builder()
+                    .userId(userAuth.getId())
+                    .userEmail(user.getEmail())
+                    .action("LOGIN")
+                    .description("Failed login attempt due to mustChangePassword")
+                    .success(false)
+                    .build());
             throw new IllegalStateException("User must change password");
         }
 
-        //CustomUserDetails userAuth = (CustomUserDetails) authentication.getPrincipal();
+        activityLogService.log(ActivityLogRequestDTO.builder()
+                .userId(userAuth.getId())
+                .userEmail(user.getEmail())
+                .action("LOGIN")
+                .description("Successful login")
+                .success(true)
+                .build());
         String token = jwtService.generateToken(userAuth, TokenType.ACCESS);
         String refreshToken = jwtService.generateToken(userAuth, TokenType.REFRESH);
 
@@ -131,6 +148,14 @@ public class AuthService implements IAuthService{
                 .build();
         userRepository.save(user);
 
+        activityLogService.log(ActivityLogRequestDTO.builder()
+                .userId(user.getId())
+                .userEmail(user.getEmail())
+                .action("USER_CREATE")
+                .description("User registered successfully : " + user.getEmail())
+                .success(true)
+                .build());
+
         String activationToken = jwtService.generateToken((new CustomUserDetails(user)), TokenType.ACTIVATION);
         emailService.sendEmail(user, activationToken, TokenType.ACTIVATION);
 
@@ -185,6 +210,12 @@ public class AuthService implements IAuthService{
 
         // 6. Sauvegarde
         userRepository.save(user);
+        activityLogService.log(ActivityLogRequestDTO.builder()
+                .userEmail(email)
+                .action("PASSWORD_RESET")
+                .description("Mot de passe réinitialisé pour : " + email)
+                .success(true)
+                .build());
 
 
     }

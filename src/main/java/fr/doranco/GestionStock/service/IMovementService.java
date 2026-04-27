@@ -6,7 +6,7 @@ import fr.doranco.GestionStock.model.dto.MovementResponseDTO;
 import java.util.List;
 
 public interface IMovementService {
-    MovementResponseDTO createMovement(MovementRequestDTO dto,Long currentUserId) throws Exception;
+    MovementResponseDTO createMovement(MovementRequestDTO dto) throws Exception;
     List<MovementResponseDTO> getMovementsByUser(Long userId) throws Exception;
     List<MovementResponseDTO> getAllMovements() throws Exception;
     MovementResponseDTO getMovementById(Long id) throws Exception;

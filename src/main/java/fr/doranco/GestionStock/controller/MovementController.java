@@ -23,11 +23,9 @@ public class MovementController implements  IMovementController {
     @Override
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('MOVEMENT_RECORD')")
-    public ResponseEntity<?> createMovement(@Valid @RequestBody MovementRequestDTO dto, @AuthenticationPrincipal CustomUserDetails userDetails) throws Exception {
-        if(userDetails == null) {
-            return new ResponseEntity<>("User details not found", HttpStatus.UNAUTHORIZED);
-        }
-        MovementResponseDTO response = movementService.createMovement(dto, userDetails.getId());
+    public ResponseEntity<?> createMovement(@Valid @RequestBody MovementRequestDTO dto) throws Exception {
+       
+        MovementResponseDTO response = movementService.createMovement(dto);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
