@@ -8,9 +8,12 @@ import fr.doranco.GestionStock.model.dto.MovementResponseDTO;
 import fr.doranco.GestionStock.model.entity.Movement;
 import fr.doranco.GestionStock.model.entity.Product;
 import fr.doranco.GestionStock.model.entity.User;
+import fr.doranco.GestionStock.mongo.dto.ActivityLogRequestDTO;
+import fr.doranco.GestionStock.mongo.service.IActivityLogService;
 import fr.doranco.GestionStock.repository.IMovementRepository;
 import fr.doranco.GestionStock.repository.IProductRepository;
 import fr.doranco.GestionStock.repository.IUserRepository;
+import fr.doranco.GestionStock.utils.RequestUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,27 +32,49 @@ public class MovementService implements IMovementService {
     private final IProductRepository productRepository;
     private final IUserRepository userRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final IActivityLogService activityLogService;
 
     @Override
     public MovementResponseDTO createMovement(MovementRequestDTO dto) throws Exception {
-        if(dto == null) {
-            log.error("[MOVEMENT] Creation attempt with a null MovementRequestDTO");
-            throw new IllegalArgumentException("MovementRequestDTO cannot be null");
+        try {
+            if (dto == null) {
+                log.error("[MOVEMENT] Creation attempt with a null MovementRequestDTO");
+                throw new IllegalArgumentException("MovementRequestDTO cannot be null");
+            }
+            if (dto.getProductId() == null || dto.getProductId() < 0 || dto.getQuantity() == null || dto.getQuantity() <= 0 || dto.getType() == null) {
+                log.error("[MOVEMENT] Creation attempt with invalid data: {}", dto);
+                throw new IllegalArgumentException("Invalid MovementRequestDTO data: " + dto);
+            }
+
+            Product product = productRepository.findById(dto.getProductId()).orElseThrow(() -> {
+                log.error("[MOVEMENT] Product with ID {} not found for movement creation", dto.getProductId());
+                return new IllegalArgumentException("Product with ID " + dto.getProductId() + " not found");
+            });
+
+            Movement movement = recordMovement(product, dto.getQuantity(), dto.getType(),
+                    SourceType.ADJUSTMENT);
+
+            activityLogService.log(ActivityLogRequestDTO.builder()
+                    .userId(RequestUtils.getCurrentUserId())
+                    .userEmail(RequestUtils.getCurrentUserEmail())
+                    .action(dto.getType() == MovementType.IN ? "MOVEMENT_IN" : "MOVEMENT_OUT")
+                    .description("Recorded movement of type " + dto.getType() + " for product ID " + dto.getProductId() + " with quantity " + dto.getQuantity())
+                    .success(true)
+                    .build());
+
+            return mapToResponseDTO(movement);
+        }catch (Exception e) {
+            log.error("[MOVEMENT] Error creating movement: {}", e.getMessage(), e);
+            activityLogService.log(ActivityLogRequestDTO.builder()
+                    .userId(RequestUtils.getCurrentUserId())
+                    .userEmail(RequestUtils.getCurrentUserEmail())
+                    .action("MOVEMENT_ERROR")
+                    .description("Error creating movement: " + e.getMessage())
+                    .success(false)
+                    .build());
+            throw e;
         }
-        if(dto.getProductId() == null || dto.getProductId() < 0 || dto.getQuantity() == null || dto.getQuantity() <= 0 || dto.getType() == null) {
-            log.error("[MOVEMENT] Creation attempt with invalid data: {}", dto);
-            throw new IllegalArgumentException("Invalid MovementRequestDTO data: " + dto);
-        }
 
-        Product product = productRepository.findById(dto.getProductId()).orElseThrow(() -> {
-            log.error("[MOVEMENT] Product with ID {} not found for movement creation", dto.getProductId());
-            return new IllegalArgumentException("Product with ID " + dto.getProductId() + " not found");
-        });
-
-        Movement movement = recordMovement(product, dto.getQuantity(), dto.getType(),
-                SourceType.ADJUSTMENT);
-
-        return mapToResponseDTO(movement);
     }
 
 

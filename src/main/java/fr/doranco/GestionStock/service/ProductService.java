@@ -237,7 +237,7 @@ public class ProductService implements IProductService {
                     .userId(RequestUtils.getCurrentUserId())
                     .userEmail(RequestUtils.getCurrentUserEmail())
                     .action("PRODUCT_DELETE")
-                    .description("Échec suppression produit : " + e.getMessage())
+                    .description("Echec deletion produit ID " + id + " : " + e.getMessage())
                     .success(false)
                     .build());
             throw e;
