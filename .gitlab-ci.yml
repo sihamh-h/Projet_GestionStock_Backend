@@ -24,6 +24,7 @@ sonarqube:
   stage: quality
   image: eclipse-temurin:17-jdk-alpine
   script:
+    - chmod +x ./mvnw
     - ./mvnw verify sonar:sonar
       -Dsonar.projectKey=StockiFlow-Backend
       -Dsonar.host.url=$SONAR_HOST_URL
