@@ -13,7 +13,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:8080")
 @RequestMapping("/api/rest/sales")
 @RequiredArgsConstructor
 public class SaleController implements ISaleController {
@@ -26,5 +25,19 @@ public class SaleController implements ISaleController {
     public ResponseEntity<?> create(@Valid @RequestBody SaleRequestDTO dto,@AuthenticationPrincipal User currentUser) throws Exception {
         SaleResponseDTO response = saleService.createSale(dto, currentUser);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @Override
+    @GetMapping
+    @PreAuthorize("hasAuthority('SALE_READ')")
+    public ResponseEntity<?> getAll() throws Exception {
+        return ResponseEntity.ok(saleService.getAll());
+    }
+
+    @Override
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('SALE_READ')")
+    public ResponseEntity<?> getById(@PathVariable Long id) throws Exception {
+        return ResponseEntity.ok(saleService.getById(id));
     }
 }

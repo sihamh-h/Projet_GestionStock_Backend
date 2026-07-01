@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 
 import java.util.Arrays;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -17,7 +18,11 @@ public class PasswordPolicyValidator {
             new CharacterRule(EnglishCharacterData.Digit, 1),
             new CharacterRule(EnglishCharacterData.Special, 1),
             new WhitespaceRule()
-            //new HistoryRule(3)
+
+    ));
+
+    private final PasswordValidator historyValidator = new PasswordValidator(Arrays.asList(
+            new HistoryRule()
     ));
 
    /* public boolean validate(String password) throws IllegalArgumentException {
@@ -31,6 +36,8 @@ public class PasswordPolicyValidator {
    public RuleResult validate(String password) {
        return validator.validate(new PasswordData(password));
    }
+
+
 
     public String getMessages(RuleResult result) {
         return String.join(" ",validator.getMessages(result));

@@ -6,6 +6,7 @@ import fr.doranco.GestionStock.enums.UserRole;
 
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 
@@ -23,4 +24,7 @@ public class UserResponseDTO {
     private Set<String> roles;
     private String token;
     private String refreshToken;
+    private String phoneNumber;
+    private LocalDate birthdate;
+    private String imageUrl;
 }

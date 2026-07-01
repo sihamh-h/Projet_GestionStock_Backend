@@ -3,9 +3,7 @@ package fr.doranco.GestionStock.service;
 import fr.doranco.GestionStock.model.dto.CategoryRequestDTO;
 import fr.doranco.GestionStock.model.dto.CategoryResponseDTO;
 import fr.doranco.GestionStock.model.dto.CategoryUpdateDTO;
-import fr.doranco.GestionStock.model.dto.ProductResponseDTO;
 import fr.doranco.GestionStock.model.entity.Category;
-import fr.doranco.GestionStock.model.entity.Product;
 import fr.doranco.GestionStock.repository.ICategoryRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +14,15 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Service de gestion des catégories de produits.
+ * Ce service fournit des méthodes pour créer, récupérer, mettre à jour et supprimer des catégories de produits.
+ * Il utilise le repository ICategoryRepository pour interagir avec la base de données.
+ * @since 2026-06-01
+ * @author Siham HA
+ * @version 1.0
+ * @see ICategoryRepository
+ */
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -60,6 +67,14 @@ public class CategoryService implements ICategoryService {
         return mapToResponseDto(savedCategory);
     }
 
+    /**
+     * Récupère toutes les catégories de produits.
+     * @return un ensemble de CategoryResponseDTO représentant toutes les catégories de produits.
+     * @throws Exception si une erreur survient lors de la récupération des catégories.
+     * @since 2026-06-01
+     * @see CategoryResponseDTO
+     * @see ICategoryRepository
+     */
     @Override
     public Set<CategoryResponseDTO> getAllCategories() throws Exception {
         return categoryRepository.findAll()
@@ -68,6 +83,15 @@ public class CategoryService implements ICategoryService {
                 .collect(Collectors.toSet());
     }
 
+    /**
+     * Récupère une catégorie de produit par son ID.
+     * @param id l'ID de la catégorie à récupérer.
+     * @return un CategoryResponseDTO représentant la catégorie de produit.
+     * @throws Exception si l'ID est invalide ou si aucune catégorie n'est trouvée avec cet ID.
+     * @since 2026-06-01
+     * @see CategoryResponseDTO
+     * @see ICategoryRepository
+     */
     @Override
     public CategoryResponseDTO getCategoryById(Long id) throws Exception {
        if(id == null || id <= 0){
@@ -81,6 +105,17 @@ public class CategoryService implements ICategoryService {
         return mapToResponseDto(category);
     }
 
+    /**
+     * Met à jour une catégorie de produit existante.
+     * @param id  l'ID de la catégorie à mettre à jour.
+     * @param dto un CategoryUpdateDTO contenant les nouvelles informations de la catégorie.
+     * @return un CategoryResponseDTO représentant la catégorie mise à jour.
+     * @throws Exception si l'ID est invalide, si le DTO est nul, si aucune catégorie n'est trouvée avec cet ID, ou si le nom de la catégorie existe déjà.
+     * @since 2026-06-01
+     * @see CategoryUpdateDTO
+     * @see CategoryResponseDTO
+     * @see ICategoryRepository
+     */
     @Override
     public CategoryResponseDTO updateCategory(Long id, CategoryUpdateDTO dto) throws Exception {
         if (id == null || id <= 0) {
@@ -119,6 +154,13 @@ public class CategoryService implements ICategoryService {
         return mapToResponseDto(updated);
     }
 
+    /**
+     * Supprime une catégorie de produit en la marquant comme supprimée (soft delete).
+     * @param id l'ID de la catégorie à supprimer.
+     * @throws Exception si l'ID est invalide ou si aucune catégorie n'est trouvée avec cet ID.
+     * @since 2026-06-01
+     * @see ICategoryRepository
+     */
     @Override
     public void deleteCategory(Long id) throws Exception {
         if(id == null || id <= 0){
@@ -134,6 +176,14 @@ public class CategoryService implements ICategoryService {
         log.info("[CATEGORY] Category with ID {} deleted successfully", id);
     }
 
+    /**
+     * Mappe une entité Category vers un DTO de réponse CategoryResponseDTO.
+     * @param category l'entité Category à mapper.
+     * @return un CategoryResponseDTO contenant les informations de la catégorie.
+     * @since 2026-06-01
+     * @see Category
+     * @see CategoryResponseDTO
+     */
     private CategoryResponseDTO mapToResponseDto(Category category) {
         return CategoryResponseDTO.builder()
                 .id(category.getId())

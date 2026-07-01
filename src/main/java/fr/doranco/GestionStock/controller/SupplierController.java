@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@CrossOrigin(origins = "http://localhost:8080")
 @RequestMapping("/api/rest/supplier")
 @RequiredArgsConstructor
 public class SupplierController implements ISupplierController {

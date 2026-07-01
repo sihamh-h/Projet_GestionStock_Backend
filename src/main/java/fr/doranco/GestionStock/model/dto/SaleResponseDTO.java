@@ -13,6 +13,7 @@ public record SaleResponseDTO(
         String saleNumber,
         LocalDate saleDate,
         Float totalAmount,
-        List<SaleLineResponseDTO> lines
+        List<SaleLineResponseDTO> lines,
+        String createdByName
 ) {
 }

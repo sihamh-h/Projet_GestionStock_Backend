@@ -4,5 +4,6 @@ public enum SeverityAlert {
 
     LOW,
     MEDIUM,
+    HIGH,
     CRITICAL
 }

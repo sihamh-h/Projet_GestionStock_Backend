@@ -39,4 +39,6 @@ public class SaleLine {
     @JoinColumn(name = "sale_id", nullable = false)
     @NotNull(message = "Sale must not be null")
     private Sale sale;
+
+
 }

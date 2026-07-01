@@ -23,7 +23,6 @@ public class ActivityLog {
 
     private String userEmail;
 
-
     private String action;
 
     private String description;
@@ -31,5 +30,4 @@ public class ActivityLog {
     private LocalDateTime timestamp;
 
     private boolean success;
-
 }

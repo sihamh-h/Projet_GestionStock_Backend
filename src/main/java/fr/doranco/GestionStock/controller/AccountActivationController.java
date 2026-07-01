@@ -28,10 +28,10 @@ public class AccountActivationController {
         try {
             setupToken = accountActivationService.activateAccount(token);
         } catch (IllegalAccessException e) {
-            log.error("Account activation failed: {}", e.getMessage());
+            log.error("invalid token or user not found: {}", e.getMessage());
             return ResponseEntity.badRequest().body(Map.of("invalid token or user not found", e.getMessage()));
         } catch (IllegalStateException e) {
-            log.error("Account activation failed: {}", e.getMessage());
+            log.error("account already activated: {}", e.getMessage());
             return ResponseEntity.accepted().body(Map.of("account already activated", e.getMessage()));
         }
         return ResponseEntity.ok(Map.of("message", "account activated successfully", "setupToken", setupToken));

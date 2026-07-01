@@ -11,6 +11,7 @@ import fr.doranco.GestionStock.model.entity.Role;
 import fr.doranco.GestionStock.model.entity.User;
 import fr.doranco.GestionStock.repository.IRoleRepository;
 import fr.doranco.GestionStock.repository.IUserRepository;
+import fr.doranco.GestionStock.security.InputSanitizer;
 import fr.doranco.GestionStock.security.JwtService;
 import fr.doranco.GestionStock.security.encoderPwd.PasswordEncoderContext;
 import jakarta.persistence.EntityNotFoundException;
@@ -55,6 +56,8 @@ public class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
+    @Mock
+    private InputSanitizer sanitizer;
 
 
     @Test
@@ -65,15 +68,16 @@ public class UserServiceTest {
         user.setLastname("test");
         user.setPhoneNumber("0621548941");
         user.setUsername("userTest");
-        user.setBirthdate(LocalDate.of( 1990, 12, 9));
+        user.setBirthdate(LocalDate.of(1990, 12, 9));
         user.setRoles(Set.of(UserRole.ROLE_MANAGER));
 
-        Role managerRole = new Role(1L, UserRole.ROLE_MANAGER,"Manager Role" , null);
+        Role managerRole = new Role(1L, UserRole.ROLE_MANAGER, "Manager Role", null);
 
-        when( userRepository.existsByEmail("user@mail.com")).thenReturn(false);
-        when( userRepository.existsByUsername("userTest")).thenReturn(false);
-        when( userRepository.existsByPhoneNumber("0621548941")).thenReturn(false);
+        when(userRepository.findByEmailIncludingDeleted("user@mail.com")).thenReturn(Optional.empty());
+        when(userRepository.findByUsernameIncludingDeleted("userTest")).thenReturn(Optional.empty());
+        when(userRepository.findByPhoneNumberIncludingDeleted("0621548941")).thenReturn(Optional.empty());
         when(roleRepository.findByName(UserRole.ROLE_MANAGER)).thenReturn(Optional.of(managerRole));
+        when(sanitizer.sanitize(anyString())).thenAnswer(invocation -> invocation.getArgument(0));
         when(passwordEncoder.hash(anyString())).thenReturn("hashedPassword");
         when(jwtService.generateToken(any(), eq(TokenType.ACTIVATION)))
                 .thenReturn("activationToken");
@@ -84,7 +88,7 @@ public class UserServiceTest {
                 .lastname("test")
                 .username("userTest")
                 .email("user@mail.com")
-                .birthdate(LocalDate.of( 1990, 12, 9))
+                .birthdate(LocalDate.of(1990, 12, 9))
                 .roles(Set.of(managerRole))
                 .password("hashedPassword")
                 .build();
@@ -99,10 +103,6 @@ public class UserServiceTest {
 
         verify(userRepository).save(any(User.class));
         verify(emailService).sendEmail(any(User.class), eq("activationToken"), eq(TokenType.ACTIVATION));
-
-
-
-
     }
 
     @Test
@@ -128,25 +128,27 @@ public class UserServiceTest {
         user.setLastname("test");
         user.setPhoneNumber("0621548941");
         user.setUsername("userTest");
-        user.setBirthdate(LocalDate.of( 1990, 12, 9));
+        user.setBirthdate(LocalDate.of(1990, 12, 9));
         user.setRoles(Set.of(UserRole.ROLE_MANAGER));
 
-        when(userRepository.existsByUsername("userTest")).thenReturn(true);
+        User existingUser = User.builder().id(2L).username("userTest").build();
+        existingUser.setDeleted(false);
+
+        when(userRepository.findByEmailIncludingDeleted("user@mail.com")).thenReturn(Optional.empty());
+        when(userRepository.findByUsernameIncludingDeleted("userTest")).thenReturn(Optional.of(existingUser));
+
         assertThrows(IllegalArgumentException.class, () -> userService.createUser(user));
     }
-
-   @Test
+    @Test
     public void testDeleteUserSuccessfully() throws Exception {
-        Role role = new Role(1L, UserRole.ROLE_MANAGER,"Manager Role" , null);
-       User user = new User();
-       user.setId(1L);
-       user.setRoles(Set.of(role));
+        Role role = new Role(1L, UserRole.ROLE_MANAGER, "Manager Role", null);
+        User user = new User();
+        user.setId(1L);
+        user.setRoles(Set.of(role));
 
-       when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-
-       userService.deleteUser(1L);
-
-       verify(userRepository).deleteById(1L);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        userService.deleteUser(1L);
+        verify(userRepository).save(argThat(u -> u.isDeleted() && !u.isEnabled()));
     }
 
     @Test
@@ -170,13 +172,15 @@ public class UserServiceTest {
     @Test
     void testUpdateUserSuccessfully() throws Exception {
         Long userId = 1L;
-        UpdateUserDTO dto = new UpdateUserDTO("Jean", "Dupont", "jean@test.com", "0102030405", LocalDate.of(1990,1,1), Set.of(UserRole.ROLE_MANAGER));
+        UpdateUserDTO dto = new UpdateUserDTO("Jean", "Dupont", "jean@test.com", "0102030405",
+                LocalDate.of(1990, 1, 1), Set.of(UserRole.ROLE_MANAGER), null);
 
         User existingUser = User.builder().id(userId).roles(new HashSet<>()).build();
-        Role role = new Role(1L, UserRole.ROLE_MANAGER,"Manager Role" , null);
+        Role role = new Role(1L, UserRole.ROLE_MANAGER, "Manager Role", null);
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
         when(roleRepository.findByName(UserRole.ROLE_MANAGER)).thenReturn(Optional.of(role));
+        when(sanitizer.sanitize(anyString())).thenAnswer(invocation -> invocation.getArgument(0));
         when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArguments()[0]);
 
         UserResponseDTO result = userService.updateUser(userId, dto);
@@ -185,10 +189,11 @@ public class UserServiceTest {
         verify(userRepository).save(any(User.class));
     }
 
+
     @Test
     void testUpdateUserWhenUserNotFound() {
         Long userId = 1L;
-        UpdateUserDTO dto = new UpdateUserDTO("Jean", "Dupont", "jean@mail.com", "0102030405", LocalDate.of(1990,1,1), Set.of(UserRole.ROLE_MANAGER));
+        UpdateUserDTO dto = new UpdateUserDTO("Jean", "Dupont", "jean@mail.com", "0102030405", LocalDate.of(1990,1,1), Set.of(UserRole.ROLE_MANAGER), null);
 
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> userService.updateUser(userId, dto));

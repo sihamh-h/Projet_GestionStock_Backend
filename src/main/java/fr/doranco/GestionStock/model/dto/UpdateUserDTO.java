@@ -32,4 +32,6 @@ public class UpdateUserDTO {
 
     @NotEmpty(message = "Roles cannot be empty")
     private Set<UserRole> roles;
+
+    private String imageUrl;
 }

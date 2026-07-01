@@ -176,7 +176,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleIllegalState(IllegalStateException ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(Map.of("error", ex.getMessage()));
+                .body(Map.of("message", ex.getMessage()));
     }
 
    /* @ExceptionHandler(DataIntegrityViolationException.class)

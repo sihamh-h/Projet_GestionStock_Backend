@@ -6,4 +6,9 @@ import org.springframework.http.ResponseEntity;
 
 public interface ISaleController {
     ResponseEntity<?> create(SaleRequestDTO dto, User currentUser) throws Exception;
+
+
+    ResponseEntity<?> getAll() throws Exception  ;
+    ResponseEntity<?> getById(Long id) throws Exception ;
+
 }

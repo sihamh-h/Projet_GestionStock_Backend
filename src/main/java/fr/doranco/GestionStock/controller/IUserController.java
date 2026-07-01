@@ -1,5 +1,6 @@
 package fr.doranco.GestionStock.controller;
 
+import fr.doranco.GestionStock.model.dto.ChangePasswordRequestDTO;
 import fr.doranco.GestionStock.model.dto.RegisterUserRequestDTO;
 import fr.doranco.GestionStock.model.dto.UpdateUserDTO;
 import fr.doranco.GestionStock.model.dto.UserCreateDTO;
@@ -15,5 +16,6 @@ public interface IUserController {
     ResponseEntity<?> getUserById( Long id) throws Exception;
     ResponseEntity<?> getUsers() throws Exception;
     ResponseEntity<?> updateUser( Long id, UpdateUserDTO dto) throws Exception;
+    ResponseEntity<?> changePassword(Long id, ChangePasswordRequestDTO dto) throws Exception;
 
 }

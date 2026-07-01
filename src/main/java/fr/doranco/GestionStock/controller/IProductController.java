@@ -11,4 +11,6 @@ public interface IProductController {
     ResponseEntity<?> getProductById (Long id) throws Exception;
     ResponseEntity<?> updateProduct (Long id, ProductUpdateDTO dto) throws Exception;
     ResponseEntity<?> deleteProduct( Long id) throws Exception;
+    ResponseEntity<?> restoreProduct(Long id) throws Exception ;
+    ResponseEntity<?> getDeletedProducts() throws Exception ;
 }

@@ -29,9 +29,11 @@ public class CustomUserDetails  implements UserDetails {
     private final Set<Role> roles;
     private final  boolean enabled;
     private final boolean mustChangePassword;
-    private boolean deleted;
+    private final boolean deleted;
+    private final String imageUrl;;
 
-    public CustomUserDetails(Long id, String firstname, String lastname, String email, String password, Set<Role> roles, boolean enabled, boolean mustChangePassword, boolean deleted) {
+
+    public CustomUserDetails(Long id, String firstname, String lastname, String email, String password, Set<Role> roles, boolean enabled, boolean mustChangePassword, boolean deleted, String imageUrl) {
         this.id = id;
         this.firstname = firstname;
         this.lastname = lastname;
@@ -41,6 +43,7 @@ public class CustomUserDetails  implements UserDetails {
         this.enabled = enabled;
         this.mustChangePassword = mustChangePassword;
         this.deleted = deleted;
+        this.imageUrl = imageUrl;
     }
 
     public CustomUserDetails(User user) {
@@ -53,6 +56,7 @@ public class CustomUserDetails  implements UserDetails {
         this.enabled = user.isEnabled();
         this.mustChangePassword = user.isMustChangePassword();
         this.deleted = user.isDeleted();
+        this.imageUrl = user.getImageUrl();
     }
 
     @Override
@@ -108,4 +112,6 @@ public class CustomUserDetails  implements UserDetails {
     public boolean isEnabled() {
         return enabled && !deleted;
     }
+
+
 }

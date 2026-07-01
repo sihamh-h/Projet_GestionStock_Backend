@@ -1,10 +1,7 @@
 package fr.doranco.GestionStock.controller;
 
 
-import fr.doranco.GestionStock.model.dto.RegisterUserRequestDTO;
-import fr.doranco.GestionStock.model.dto.UpdateUserDTO;
-import fr.doranco.GestionStock.model.dto.UserCreateDTO;
-import fr.doranco.GestionStock.model.dto.UserResponseDTO;
+import fr.doranco.GestionStock.model.dto.*;
 import fr.doranco.GestionStock.service.IUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:8080")
@@ -62,5 +61,14 @@ public class UserController implements IUserController {
             throw new IllegalArgumentException("Invalid user ID");
         }
         return ResponseEntity.ok(userService.updateUser(id, dto));
+    }
+
+    @PatchMapping("/{id}/change-password")
+    public ResponseEntity<?> changePassword(
+            @PathVariable Long id,
+            @Valid @RequestBody ChangePasswordRequestDTO dto) throws Exception {
+        if (id <= 0) throw new IllegalArgumentException("Invalid user ID");
+        userService.changePassword(id, dto);
+        return ResponseEntity.ok(Map.of("message", "Password changed successfully"));
     }
 }

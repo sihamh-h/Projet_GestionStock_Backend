@@ -12,5 +12,7 @@ public record SupplierResponseDTO(Long id,
                                   String email,
                                   String phone,
                                   LocalDateTime createdAt,
-                                  Long createdBy) {
+                                  Long createdBy,
+                                  String createdByName
+) {
 }

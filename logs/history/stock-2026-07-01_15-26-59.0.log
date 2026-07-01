@@ -1,0 +1,1 @@
+2026-07-01 15:26:59.369 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.

@@ -13,5 +13,6 @@ public interface IAuthController {
     ResponseEntity<?> registerUser(RegisterUserRequestDTO user)throws Exception;
     ResponseEntity<?> resetPassword(@RequestBody ResetPwdRequestDTO request) throws Exception;
     ResponseEntity<?> refreshToken(TokenRefreshRequest refreshtoken) throws Exception;
+    ResponseEntity<?> forgotPassword( Map<String, String> body) throws Exception;
 
 }

@@ -2,10 +2,11 @@ package fr.doranco.GestionStock.controller;
 
 import fr.doranco.GestionStock.enums.OrderStatus;
 import fr.doranco.GestionStock.model.dto.OrderRequestDTO;
+import fr.doranco.GestionStock.security.CustomUserDetails;
 import org.springframework.http.ResponseEntity;
 
 public interface IOrderController {
-    ResponseEntity<?> createOrder(OrderRequestDTO dto) throws Exception;
+    ResponseEntity<?> createOrder(OrderRequestDTO dto, CustomUserDetails userDetails) throws Exception;
     ResponseEntity<?> getOrderById(Long id) throws Exception;
     ResponseEntity<?> getAll() throws Exception;
     ResponseEntity<?> updateOrderStatus(Long id, OrderStatus status) throws Exception;

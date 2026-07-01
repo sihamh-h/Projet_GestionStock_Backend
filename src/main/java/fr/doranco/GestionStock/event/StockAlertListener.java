@@ -29,17 +29,11 @@ public class StockAlertListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleLowStock(LowStockEvent event) {
+
         var product = event.getProduct();
 
-        if (alertRepository.existsByProductAndResolvedAtIsNull(product)) return;
-
-        log.warn("[ALERT SYSTEM] Generating alert for product: {}", product.getName());
-
-        // Déterminer la sévérité
-        SeverityAlert severity = SeverityAlert.MEDIUM;
-        if (product.getActualStock() == 0) {
-            severity = SeverityAlert.CRITICAL;
-        } else if (product.getActualStock() > product.getMinStock()) {
+        // Stock OK → résoudre l'alerte existante si elle existe
+        if (product.getActualStock() > product.getMinStock()) {
             alertRepository.findByProductAndResolvedAtIsNull(product)
                     .ifPresent(alert -> {
                         alert.setResolvedAt(LocalDateTime.now());
@@ -48,31 +42,70 @@ public class StockAlertListener {
             return;
         }
 
+        SeverityAlert severity;
+        int stock = product.getActualStock();
+        int min   = product.getMinStock();
 
-        String message = product.getActualStock() == 0
-                ? "Rupture de stock : " + product.getName()
-                : "Stock bas : " + product.getName()
-                + " (" + product.getActualStock() + " / min " + product.getMinStock() + ")";
+        if (stock == 0) {
+            severity = SeverityAlert.CRITICAL;          // rupture totale
+        } else if (stock <= min * 0.25) {
+            severity = SeverityAlert.HIGH;              // stock < 25% du min
+        } else if (stock <= min * 0.5) {
+            severity = SeverityAlert.MEDIUM;            // stock < 50% du min
+        } else {
+            severity = SeverityAlert.LOW;               // stock < min mais > 50%
+        }
+        System.out.println(" alert produit"+ product.getName());
+        System.out.println("severité "+ severity);
 
-        // Créer et sauvegarder l'alerte
-        StockAlert alert = StockAlert.builder()
-                .product(product)
-                .message(message)
-                .severity(severity)
-                .createdAt(LocalDateTime.now())
-                .build();
+        // Alerte existante → mettre à jour la sévérité si elle a changé
+        alertRepository.findByProductAndResolvedAtIsNull(product)
+                .ifPresentOrElse(
+                        existingAlert -> {
+                            if (existingAlert.getSeverity() != severity) {
+                                existingAlert.setSeverity(severity);
+                                existingAlert.setMessage(
+                                        product.getActualStock() == 0
+                                                ? "Rupture de stock : " + product.getName()
+                                                : "Stock bas : " + product.getName()
+                                                + " (" + product.getActualStock() + " / min " + product.getMinStock() + ")"
+                                );
+                                alertRepository.save(existingAlert);
+                                // Notifie via SSE
+                                sseService.sendAlert(StockAlertDTO.builder()
+                                        .id(existingAlert.getId())
+                                        .productName(product.getName())
+                                        .productReference(product.getReference())
+                                        .message(existingAlert.getMessage())
+                                        .severity(severity)
+                                        .createdAt(existingAlert.getCreatedAt())
+                                        .build());
+                            }
+                        },
+                        () -> {
+                            // Pas d'alerte existante → créer une nouvelle
+                            String message = product.getActualStock() == 0
+                                    ? "Rupture de stock : " + product.getName()
+                                    : "Stock bas : " + product.getName()
+                                    + " (" + product.getActualStock() + " / min " + product.getMinStock() + ")";
 
-        alertRepository.save(alert);
+                            StockAlert alert = StockAlert.builder()
+                                    .product(product)
+                                    .message(message)
+                                    .severity(severity)
+                                    .createdAt(LocalDateTime.now())
+                                    .build();
+                            alertRepository.save(alert);
 
-        // Envoyer l'alerte aux clients SSE
-        StockAlertDTO alertDto = StockAlertDTO.builder()
-                .id(alert.getId())
-                .productName(product.getName())
-                .productReference(product.getReference())
-                .message(message)
-                .severity(severity)
-                .createdAt(alert.getCreatedAt())
-                .build();
-        sseService.sendAlert(alertDto);
+                            sseService.sendAlert(StockAlertDTO.builder()
+                                    .id(alert.getId())
+                                    .productName(product.getName())
+                                    .productReference(product.getReference())
+                                    .message(message)
+                                    .severity(severity)
+                                    .createdAt(alert.getCreatedAt())
+                                    .build());
+                        }
+                );
     }
 }

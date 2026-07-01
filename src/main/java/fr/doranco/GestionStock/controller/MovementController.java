@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:8080")
 @RequestMapping("/api/rest/movement")
 @RequiredArgsConstructor
 public class MovementController implements  IMovementController {

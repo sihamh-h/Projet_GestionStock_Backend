@@ -6,6 +6,7 @@ import fr.doranco.GestionStock.model.dto.SupplierResponseDTO;
 import fr.doranco.GestionStock.model.entity.Supplier;
 import fr.doranco.GestionStock.model.entity.User;
 import fr.doranco.GestionStock.repository.ISupplierRepository;
+import fr.doranco.GestionStock.repository.IUserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import java.util.Optional;
 @Slf4j
 public class SupplierService implements ISupplierService {
     private final ISupplierRepository supplierRepository;
+    private final IUserRepository userRepository;
 
 
     @Override
@@ -140,15 +142,23 @@ public class SupplierService implements ISupplierService {
 
 
     private SupplierResponseDTO mapToResponse(Supplier supplier) {
+        String createdByName = "—";
+        if (supplier.getCreatedBy() != null) {
+            createdByName = userRepository.findById(supplier.getCreatedBy())
+                    .map(u -> u.getFirstname() + " " + u.getLastname())
+                    .orElse("—");
+        }
+
         return SupplierResponseDTO.builder()
                 .id(supplier.getId())
+                .number(supplier.getNumber())
                 .name(supplier.getName())
+                .companyName(supplier.getCompanyName())
                 .email(supplier.getEmail())
                 .phone(supplier.getPhoneNumber())
-                .number(supplier.getNumber())
-                .companyName(supplier.getCompanyName())
                 .createdAt(supplier.getCreatedAt())
                 .createdBy(supplier.getCreatedBy())
+                .createdByName(createdByName)
                 .build();
     }
 }

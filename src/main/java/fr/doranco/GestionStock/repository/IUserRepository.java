@@ -65,5 +65,14 @@ public interface IUserRepository extends JpaRepository<User, Long> {
         @Query(value = "SELECT * FROM users WHERE email = :email OR username = :username OR phone_number = :phone LIMIT 1", nativeQuery = true)
         Optional<User> findByEmailOrUsernameOrPhoneIncludingDeleted(String email, String username, String phone);
 
+        @Query("SELECT u FROM User u WHERE u.email = :email")
+        Optional<User> findByEmailIncludingDeleted(@Param("email") String email);
+
+        @Query("SELECT u FROM User u WHERE u.username = :username")
+        Optional<User> findByUsernameIncludingDeleted(@Param("username") String username);
+
+        @Query("SELECT u FROM User u WHERE u.phoneNumber = :phone")
+        Optional<User> findByPhoneNumberIncludingDeleted(@Param("phone") String phone);
+
 }
 

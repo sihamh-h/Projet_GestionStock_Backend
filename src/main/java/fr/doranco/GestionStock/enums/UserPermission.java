@@ -42,8 +42,11 @@ public enum UserPermission {
     ALERT_RESOLVE("Resolve stock alerts"),
 
     SALE_CREATE("Create a sale"),
+    SALE_READ("View sales"),
 
     LOG_READ("View activity logs");
+
+
 
     private final String description;
 

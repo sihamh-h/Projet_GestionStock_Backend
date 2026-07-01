@@ -21,7 +21,7 @@ public class AccountActivationEMailStrategy extends AbstractEmailContext {
         return "Hello " + name + ",\n\n" +
                 "An account has been created for you."+
                 "To activate your account and set your password, please click the following link : \n" +
-                "http://localhost:8080/api/rest/auth/activate?token=" + tokenOrPwd + "\n\n" +
+                "http://localhost:5173/activate?token=" + tokenOrPwd + "\n\n" +
                 "This link is valid for 24 hours."+
                 "If you did not request this email, please ignore it.\n\n" +
                 "Best regards,\n" +

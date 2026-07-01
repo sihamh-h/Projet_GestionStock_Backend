@@ -8,6 +8,5 @@ import java.util.List;
 
 public record OrderRequestDTO(@NotBlank(message = "Order number must not be blank") String orderNumber,
                               @NotNull(message = "Supplier must not be null") Long supplierId,
-                              @NotNull(message = "User must not be null") Long userId,
                               @NotEmpty(message = "Order must have at least one line") List<OrderLineRequestDTO> lines) {
 }

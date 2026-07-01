@@ -7,8 +7,15 @@ import fr.doranco.GestionStock.mongo.dto.ActivityLogResponseDTO;
 import fr.doranco.GestionStock.mongo.repository.IActivityLogRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -19,6 +26,7 @@ import java.util.List;
 @Slf4j
 public class ActivityLogService implements IActivityLogService {
    private final IActivityLogRepository activityLogRepository;
+   private final MongoTemplate mongoTemplate;
 
     @Override
     @Async
@@ -87,6 +95,37 @@ public class ActivityLogService implements IActivityLogService {
         }
 
         return mapToActivityLogResponseDTO(logs);
+    }
+
+    @Override
+    public Page<ActivityLogResponseDTO> getLogs(String action, Long userId, Boolean success, int page, int size) throws Exception {
+        Query query = new Query();
+
+        if (action != null && !action.isEmpty()) {
+            query.addCriteria(Criteria.where("action").is(action));
+        }
+        if (userId != null) {
+            query.addCriteria(Criteria.where("userId").is(userId));
+        }
+        if (success != null) {
+            query.addCriteria(Criteria.where("success").is(success));
+        }
+
+        // Total count
+        long total = mongoTemplate.count(query, ActivityLog.class);
+
+        // Pagination
+        query.with(org.springframework.data.domain.PageRequest.of(page, size));
+        query.with(org.springframework.data.domain.Sort.by(
+                org.springframework.data.domain.Sort.Direction.DESC, "timestamp"
+        ));
+
+        List<ActivityLog> logs = mongoTemplate.find(query, ActivityLog.class);
+
+        List<ActivityLogResponseDTO> dtos = mapToActivityLogResponseDTO(logs);
+
+        return new org.springframework.data.domain.PageImpl<>(dtos,
+                org.springframework.data.domain.PageRequest.of(page, size), total);
     }
 
     List<ActivityLogResponseDTO> mapToActivityLogResponseDTO(List<ActivityLog> logs) {

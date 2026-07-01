@@ -1,0 +1,3 @@
+2026-07-01 15:27:01.502 [main] ERROR f.d.GestionStock.service.AuthService - Type error: Access, expect: REFRESH
+2026-07-01 15:27:01.644 [main] INFO  f.d.GestionStock.service.UserService - User with ID 1 has been deleted.
+2026-07-01 15:27:01.717 [main] INFO  f.d.GestionStock.service.UserService - [USER] Registration finalized for: user@mail.com

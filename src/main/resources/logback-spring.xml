@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true">
+
+    <!-- Dossier de logs -->
+    <property name="LOG_DIR" value="logs"/>
+    <property name="LOG_DIR_HISTORY" value="logs/history"/>
+
+    <!-- Pattern d'affichage -->
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
+
+    <!-- Appender console -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Appender fichier avec rolling et taille max -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/stock.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- Nom fichier de sauvegarde avec date + heure -->
+            <fileNamePattern>${LOG_DIR_HISTORY}/stock-%d{yyyy-MM-dd_HH-mm-ss}.%i.log</fileNamePattern>
+
+            <!-- Taille max d’un fichier avant rotation -->
+            <maxFileSize>5MB</maxFileSize>
+
+            <!-- Nombre max de fichiers archivés -->
+            <maxHistory>30</maxHistory>
+
+            <!-- Taille totale max pour le dossier logs (optionnel) -->
+            <totalSizeCap>200MB</totalSizeCap>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Niveau de log global -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+    <!-- Log spécifique pour Spring Boot -->
+    <!--
+    <logger name="org.springframework" level="WARN"/>
+    <logger name="org.hibernate.SQL" level="DEBUG"/>
+    -->
+</configuration>

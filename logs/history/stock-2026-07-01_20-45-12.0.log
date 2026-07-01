@@ -1,0 +1,2 @@
+2026-07-01 20:45:12.757 [SpringApplicationShutdownHook] INFO  o.s.c.s.DefaultLifecycleProcessor - Shutdown phase 2147482623 ends with 1 bean still running after timeout of 30000ms: [webServerGracefulShutdown]
+2026-07-01 20:45:12.821 [tomcat-shutdown] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown aborted with one or more requests still active

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:8080")
+//@CrossOrigin(origins = "http://localhost:8080")
 @RequestMapping("/api/rest/auth")
 public class AuthController implements IAuthController{
 
@@ -56,8 +56,19 @@ public class AuthController implements IAuthController{
     @Override
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(@Valid @RequestBody TokenRefreshRequest request) throws Exception {
-        authService.refreshToken(request.refreshToken());
-        return ResponseEntity.ok(Map.of("message", "Token refreshed successfully"));
+        UserResponseDTO user = authService.refreshToken(request.refreshToken());
+        return ResponseEntity.ok(Map.of("message", "Token refreshed successfully",  "accessToken", user.getToken(),
+                "refreshToken", user.getRefreshToken()));
 
+
+
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> body) throws Exception {
+        authService.initiatePasswordReset(body.get("email"));
+        return ResponseEntity.ok(Map.of(
+                "message", "Si cet email correspond à un compte, vous recevrez un lien sous peu."
+        ));
     }
 }

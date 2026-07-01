@@ -68,4 +68,18 @@ public class ProductController implements IProductController {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }
+
+    @Override
+    @PatchMapping("/{id}/restore")
+    @PreAuthorize("hasAuthority('PRODUCT_UPDATE')")
+    public ResponseEntity<?> restoreProduct(@PathVariable Long id) throws Exception {
+        return ResponseEntity.ok(productService.restoreProduct(id));
+    }
+
+    @Override
+    @GetMapping("/deleted")
+    @PreAuthorize("hasAuthority('PRODUCT_READ')")
+    public ResponseEntity<?> getDeletedProducts() throws Exception {
+        return ResponseEntity.ok(productService.getDeletedProducts());
+    }
 }

@@ -162,10 +162,8 @@ public class DataInitializer implements CommandLineRunner {
      */
     private Set<Permission> determinePermissions(UserRole role, Map<UserPermission, Permission> allPermissions) {
         Set<Permission> perms = new HashSet<>();
-
         switch (role) {
             case ROLE_ADMIN:
-                // L'admin reçoit absolument TOUT
                 perms.addAll(allPermissions.values());
                 break;
 
@@ -196,6 +194,7 @@ public class DataInitializer implements CommandLineRunner {
                 addPerm(perms, allPermissions, UserPermission.INVENTORY_ADJUST);
                 addPerm(perms, allPermissions, UserPermission.MOVEMENT_READ);
                 addPerm(perms, allPermissions, UserPermission.SALE_CREATE);
+                addPerm(perms, allPermissions, UserPermission.SALE_READ);
                 addPerm(perms, allPermissions, UserPermission.ALERT_READ);
                 addPerm(perms, allPermissions, UserPermission.ALERT_RESOLVE);
                 addPerm(perms, allPermissions, UserPermission.LOG_READ);

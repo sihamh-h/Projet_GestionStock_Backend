@@ -4,16 +4,17 @@ import fr.doranco.GestionStock.enums.OrderStatus;
 import fr.doranco.GestionStock.model.dto.OrderRequestDTO;
 import fr.doranco.GestionStock.model.dto.OrderResponseDTO;
 import fr.doranco.GestionStock.model.dto.ProductResponseDTO;
+import fr.doranco.GestionStock.security.CustomUserDetails;
 import fr.doranco.GestionStock.service.IOrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:8080")
 @RequestMapping("/api/rest/order")
 @RequiredArgsConstructor
 public class OrderController implements IOrderController {
@@ -21,11 +22,11 @@ public class OrderController implements IOrderController {
     @Override
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('ORDER_CREATE')")
-    public ResponseEntity<?> createOrder(@Valid @RequestBody OrderRequestDTO dto) throws Exception {
+    public ResponseEntity<?> createOrder(@Valid @RequestBody OrderRequestDTO dto,  @AuthenticationPrincipal CustomUserDetails userDetails) throws Exception {
         if(dto == null){
             return ResponseEntity.badRequest().body("Request is null");
         }
-        OrderResponseDTO order = orderService.create(dto);
+        OrderResponseDTO order = orderService.create(dto, userDetails.getId());
         return new ResponseEntity<>(order, HttpStatus.CREATED);
     }
 

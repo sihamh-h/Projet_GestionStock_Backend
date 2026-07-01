@@ -5,8 +5,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class PasswordEncoderContext {
     private final IPasswordEncoderStrategy strategy;
-
-
     public PasswordEncoderContext(IPasswordEncoderStrategy strategy) {
         this.strategy = strategy;
     }

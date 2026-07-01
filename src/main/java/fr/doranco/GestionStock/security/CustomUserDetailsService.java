@@ -45,7 +45,8 @@ public class CustomUserDetailsService implements UserDetailsService {
                 user.getRoles(),
                 user.isEnabled(),
                 user.isMustChangePassword(),
-                user.isDeleted()
+                user.isDeleted(),
+                user.getImageUrl()
         );
 
     }

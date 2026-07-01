@@ -60,6 +60,9 @@ public class User extends Auditable {
     @Column(name = "phone_number", length = 20, unique = true, nullable = true)
     private String phoneNumber;
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_roles",
@@ -84,6 +87,13 @@ public class User extends Auditable {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Order> orders = new ArrayList<>();
 
+    @Builder.Default
+    @Column(name = "failed_login_attempts")
+    private Integer  failedLoginAttempts = 0;
+
+    @Column(name = "lock_time")
+    private LocalDateTime lockTime;
+
 
     public void anonymize() {
         String suffix = (this.getId() != null) ? this.getId().toString() : UUID.randomUUID().toString().substring(0, 8);
@@ -92,10 +102,8 @@ public class User extends Auditable {
         this.setUsername(technicalId);
         this.email = technicalId + "@deleted.com";
 
-
         this.setFirstname("Anonymize");
         this.lastname = "User";
-
 
         this.phoneNumber = null;
 

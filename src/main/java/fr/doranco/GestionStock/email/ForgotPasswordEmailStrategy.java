@@ -22,7 +22,7 @@ public class ForgotPasswordEmailStrategy extends AbstractEmailContext {
         return "Hello " + name + ",\n\n" +
                 "We have received a request to reset the password for your account.\n" +
                 "Please click the link below to choose a new password : \n" +
-                "http://localhost:8080/api/rest/auth/reset-password?token=" + token + "\n\n" +
+                "http://localhost:5173/reset-password?token=" + token + "\n\n" +
                 "This link is valid for 1 hour.\n" +
                 "If you did not request this password reset, please ignore this email.\n\n" +
                 "Kind regards,\n" +

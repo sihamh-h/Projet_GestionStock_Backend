@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/rest/logs")
-@CrossOrigin(origins = "http://localhost:8080")
 @RequiredArgsConstructor
 @Slf4j
 public class ActivityLogController implements  IActivityLogController {
@@ -41,5 +40,17 @@ public class ActivityLogController implements  IActivityLogController {
     @PreAuthorize("hasAuthority('LOG_READ')")
     public ResponseEntity<?> getFailedLogs() throws Exception {
         return ResponseEntity.ok(activityLogService.getFailedLogs());
+    }
+
+    @GetMapping
+    @PreAuthorize("hasAuthority('LOG_READ')")
+    public ResponseEntity<?> getLogs(
+            @RequestParam(required = false) String action,
+            @RequestParam(required = false) Long userId,
+            @RequestParam(required = false) Boolean success,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) throws Exception {
+        return ResponseEntity.ok(activityLogService.getLogs(action, userId, success, page, size));
     }
 }

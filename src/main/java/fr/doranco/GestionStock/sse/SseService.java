@@ -28,7 +28,7 @@ public class SseService {
         emitters.forEach(emitter -> {
             try {
                 emitter.send(SseEmitter.event()
-                        .name("stock-alert")
+                        //.name("stock-alert")
                         .data(alert));
             } catch (IOException e) {
                 log.warn("[SSE] Failed to send alert to an emitter, removing it. Error: {}", e.getMessage());

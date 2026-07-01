@@ -1,6 +1,7 @@
 package fr.doranco.GestionStock.service;
 
 
+import fr.doranco.GestionStock.model.dto.ChangePasswordRequestDTO;
 import fr.doranco.GestionStock.model.dto.UpdateUserDTO;
 import fr.doranco.GestionStock.model.dto.UserCreateDTO;
 import fr.doranco.GestionStock.model.dto.UserResponseDTO;
@@ -15,6 +16,7 @@ public interface IUserService {
        UserResponseDTO  updateUser(Long id, UpdateUserDTO updateUserDto) throws Exception;
        void deleteUser(Long id) throws Exception;
        UserResponseDTO createUser(UserCreateDTO registerUserDTO) throws Exception;
+       void changePassword(Long userId, ChangePasswordRequestDTO dto) throws Exception;
 
 
 
