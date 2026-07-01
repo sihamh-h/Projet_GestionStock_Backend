@@ -1,0 +1,42 @@
+stages:
+  - test
+  - quality
+  - build
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+
+cache:
+  paths:
+    - .m2/repository
+
+test:
+  stage: test
+  image: eclipse-temurin:17-jdk-alpine
+  script:
+    - ./mvnw test
+  artifacts:
+    reports:
+      junit: target/surefire-reports/TEST-*.xml
+
+sonarqube:
+  stage: quality
+  image: eclipse-temurin:17-jdk-alpine
+  script:
+    - ./mvnw verify sonar:sonar
+      -Dsonar.projectKey=StockiFlow-Backend
+      -Dsonar.host.url=$SONAR_HOST_URL
+      -Dsonar.token=$SONAR_TOKEN
+      -DskipTests
+  only:
+    - main
+
+build:
+  stage: build
+  image: docker:24
+  services:
+    - docker:24-dind
+  script:
+    - docker build -t stockiflow-backend:$CI_COMMIT_SHORT_SHA .
+  only:
+    - main
