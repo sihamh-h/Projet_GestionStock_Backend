@@ -1,0 +1,11 @@
+2026-07-06 09:30:33.230 [scheduling-1] DEBUG org.hibernate.SQL - 
+    select
+        * 
+    from
+        users 
+    where
+        deleted = true 
+        and updated_at <= ? 
+        and anonymized_at is null
+2026-07-06 09:30:33.275 [scheduling-1] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:TIMESTAMP) <- [2026-06-06T09:30:33.204314400]
+2026-07-06 09:30:33.890 [SpringApplicationShutdownHook] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete

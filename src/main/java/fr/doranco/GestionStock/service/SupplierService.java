@@ -69,9 +69,9 @@ public class SupplierService implements ISupplierService {
                 .address(request.address())
                 .number(request.number())
                 .build();
-        supplierRepository.save(supp);
+        Supplier saved = supplierRepository.save(supp);
         log.info("[SUPPLIER] Created new supplier with ID {}: {}", supp.getId(), supp);
-        return mapToResponse(supp);
+        return mapToResponse(saved);
 
     }
 

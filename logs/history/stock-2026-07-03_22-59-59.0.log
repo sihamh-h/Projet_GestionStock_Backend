@@ -1,0 +1,5 @@
+2026-07-03 22:59:59.855 [main] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+2026-07-03 22:59:59.860 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
+2026-07-03 22:59:59.865 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 4 ms
+2026-07-03 22:59:59.945 [main] INFO  f.d.G.c.SaleControllerIntegrationTest - Started SaleControllerIntegrationTest in 15.992 seconds (process running for 18.101)
+2026-07-03 22:59:59.968 [main] INFO  f.d.G.config.DataInitializer - --- Démarrage de la synchronisation des données de sécurité ---

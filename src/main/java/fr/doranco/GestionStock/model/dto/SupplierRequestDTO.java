@@ -20,7 +20,7 @@ public record SupplierRequestDTO(@NotBlank(message = "Supplier number is require
                                  @Size(max = 50)
                                   String website,
 
-                                 @Pattern(regexp = "^\\d{14}$", message = "SIRET must be exactly 14 digits")
+                                 @Pattern(regexp = "^$|^\\d{14}$", message = "SIRET must be exactly 14 digits")
                                   String siret,
 
                                   @Email(message = "Invalid email format")

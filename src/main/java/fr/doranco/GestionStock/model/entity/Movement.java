@@ -46,8 +46,6 @@ public class Movement extends Auditable {
     @Column(name = "source_type")
     private SourceType sourceType;
 
-
     private Long sourceId;
-
 
 }

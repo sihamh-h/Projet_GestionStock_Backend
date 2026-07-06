@@ -1,0 +1,5 @@
+2026-07-03 22:59:53.581 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-07-03 22:59:53.729 [main] DEBUG org.hibernate.SQL - 
+    alter table permissions 
+       modify column name enum ('ALERT_READ','ALERT_RESOLVE','CATEGORY_CREATE','CATEGORY_DELETE','CATEGORY_READ','CATEGORY_UPDATE','INVENTORY_ADJUST','LOG_READ','MOVEMENT_READ','MOVEMENT_RECORD','ORDER_CREATE','ORDER_DELETE','ORDER_READ','ORDER_UPDATE','PRODUCT_CREATE','PRODUCT_DELETE','PRODUCT_READ','PRODUCT_UPDATE','SALE_CREATE','SALE_READ','STOCK_CREATE','STOCK_DELETE','STOCK_READ','STOCK_UPDATE','SUPPLIER_CREATE','SUPPLIER_DELETE','SUPPLIER_READ','SUPPLIER_UPDATE','USER_CREATE','USER_DELETE','USER_READ','USER_UPDATE') not null
+2026-07-03 22:59:53.924 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'

@@ -1,0 +1,716 @@
+2026-07-03 23:00:00.090 [main] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id,
+        p1_0.description,
+        p1_0.name 
+    from
+        permissions p1_0
+2026-07-03 23:00:00.186 [main] INFO  f.d.G.config.DataInitializer - 32 permissions synchronisées.
+2026-07-03 23:00:00.243 [main] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id,
+        r1_0.description,
+        r1_0.name 
+    from
+        roles r1_0 
+    where
+        r1_0.name=?
+2026-07-03 23:00:00.245 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:ENUM) <- [ROLE_ADMIN]
+2026-07-03 23:00:00.260 [main] INFO  f.d.G.config.DataInitializer - Rôle [ROLE_ADMIN] synchronisé avec 32 permissions.
+2026-07-03 23:00:00.322 [main] DEBUG org.hibernate.SQL - 
+    delete 
+    from
+        role_permission 
+    where
+        role_id=?
+2026-07-03 23:00:00.346 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.366 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.368 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.368 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [7]
+2026-07-03 23:00:00.371 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.373 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.373 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [20]
+2026-07-03 23:00:00.376 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.378 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.379 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [1]
+2026-07-03 23:00:00.380 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.382 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.382 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [30]
+2026-07-03 23:00:00.385 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.387 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.388 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [12]
+2026-07-03 23:00:00.391 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.394 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.394 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [18]
+2026-07-03 23:00:00.397 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.398 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.399 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [10]
+2026-07-03 23:00:00.402 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.403 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.403 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [25]
+2026-07-03 23:00:00.406 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.408 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.409 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [27]
+2026-07-03 23:00:00.411 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.412 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.413 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [13]
+2026-07-03 23:00:00.415 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.415 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.416 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [29]
+2026-07-03 23:00:00.418 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.419 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.419 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [24]
+2026-07-03 23:00:00.420 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.421 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.421 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [14]
+2026-07-03 23:00:00.422 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.423 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.423 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [26]
+2026-07-03 23:00:00.425 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.427 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.427 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [28]
+2026-07-03 23:00:00.429 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.430 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.430 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [15]
+2026-07-03 23:00:00.432 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.433 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.433 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [9]
+2026-07-03 23:00:00.435 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.435 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.435 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [22]
+2026-07-03 23:00:00.437 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.438 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.438 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [17]
+2026-07-03 23:00:00.439 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.440 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.440 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [32]
+2026-07-03 23:00:00.442 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.444 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.444 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [11]
+2026-07-03 23:00:00.446 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.449 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.450 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [31]
+2026-07-03 23:00:00.451 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.452 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.453 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [5]
+2026-07-03 23:00:00.454 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.455 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.458 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [2]
+2026-07-03 23:00:00.461 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.462 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.462 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [19]
+2026-07-03 23:00:00.464 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.465 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.465 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [3]
+2026-07-03 23:00:00.467 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.468 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.468 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [8]
+2026-07-03 23:00:00.469 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.470 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.470 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [4]
+2026-07-03 23:00:00.471 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.472 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.472 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [6]
+2026-07-03 23:00:00.474 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.475 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.475 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [16]
+2026-07-03 23:00:00.477 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.477 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.478 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [21]
+2026-07-03 23:00:00.479 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.480 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [1]
+2026-07-03 23:00:00.480 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [23]
+2026-07-03 23:00:00.485 [main] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id,
+        r1_0.description,
+        r1_0.name 
+    from
+        roles r1_0 
+    where
+        r1_0.name=?
+2026-07-03 23:00:00.486 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:ENUM) <- [ROLE_MANAGER]
+2026-07-03 23:00:00.494 [main] INFO  f.d.G.config.DataInitializer - Rôle [ROLE_MANAGER] synchronisé avec 29 permissions.
+2026-07-03 23:00:00.501 [main] DEBUG org.hibernate.SQL - 
+    delete 
+    from
+        role_permission 
+    where
+        role_id=?
+2026-07-03 23:00:00.502 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [2]
+2026-07-03 23:00:00.506 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.506 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [2]
+2026-07-03 23:00:00.507 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [7]
+2026-07-03 23:00:00.509 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.510 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [2]
+2026-07-03 23:00:00.510 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [20]
+2026-07-03 23:00:00.512 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.513 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [2]
+2026-07-03 23:00:00.513 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [1]
+2026-07-03 23:00:00.514 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.515 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [2]
+2026-07-03 23:00:00.515 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [30]
+2026-07-03 23:00:00.516 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.516 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [2]
+2026-07-03 23:00:00.517 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [12]
+2026-07-03 23:00:00.518 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.519 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [2]
+2026-07-03 23:00:00.519 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [18]
+2026-07-03 23:00:00.520 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.520 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [2]
+2026-07-03 23:00:00.521 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [10]
+2026-07-03 23:00:00.522 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.523 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [2]
+2026-07-03 23:00:00.523 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [25]
+2026-07-03 23:00:00.524 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.526 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [2]
+2026-07-03 23:00:00.526 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [27]
+2026-07-03 23:00:00.528 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.529 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [2]
+2026-07-03 23:00:00.529 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [13]
+2026-07-03 23:00:00.530 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.531 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [2]
+2026-07-03 23:00:00.531 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [24]
+2026-07-03 23:00:00.533 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.533 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [2]
+2026-07-03 23:00:00.533 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [29]
+2026-07-03 23:00:00.535 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.535 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [2]
+2026-07-03 23:00:00.535 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [14]
+2026-07-03 23:00:00.537 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.537 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [2]
+2026-07-03 23:00:00.538 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [26]
+2026-07-03 23:00:00.540 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.541 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [2]
+2026-07-03 23:00:00.541 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [28]
+2026-07-03 23:00:00.543 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.544 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [2]
+2026-07-03 23:00:00.544 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [15]
+2026-07-03 23:00:00.545 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.546 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [2]
+2026-07-03 23:00:00.546 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [9]
+2026-07-03 23:00:00.548 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.549 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [2]
+2026-07-03 23:00:00.549 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [22]
+2026-07-03 23:00:00.550 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.551 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [2]
+2026-07-03 23:00:00.551 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [17]
+2026-07-03 23:00:00.553 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.553 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [2]
+2026-07-03 23:00:00.553 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [11]
+2026-07-03 23:00:00.556 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.556 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [2]
+2026-07-03 23:00:00.557 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [32]
+2026-07-03 23:00:00.558 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.559 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [2]
+2026-07-03 23:00:00.559 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [31]
+2026-07-03 23:00:00.560 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.561 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [2]
+2026-07-03 23:00:00.561 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [5]
+2026-07-03 23:00:00.562 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.562 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [2]
+2026-07-03 23:00:00.562 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [19]
+2026-07-03 23:00:00.564 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.564 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [2]
+2026-07-03 23:00:00.564 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [8]
+2026-07-03 23:00:00.565 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.565 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [2]
+2026-07-03 23:00:00.565 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [6]
+2026-07-03 23:00:00.566 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.566 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [2]
+2026-07-03 23:00:00.566 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [16]
+2026-07-03 23:00:00.568 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.568 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [2]
+2026-07-03 23:00:00.569 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [21]
+2026-07-03 23:00:00.571 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.572 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [2]
+2026-07-03 23:00:00.572 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [23]
+2026-07-03 23:00:00.574 [main] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id,
+        r1_0.description,
+        r1_0.name 
+    from
+        roles r1_0 
+    where
+        r1_0.name=?
+2026-07-03 23:00:00.575 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:ENUM) <- [ROLE_EMPLOYEE]
+2026-07-03 23:00:00.580 [main] INFO  f.d.G.config.DataInitializer - Rôle [ROLE_EMPLOYEE] synchronisé avec 10 permissions.
+2026-07-03 23:00:00.586 [main] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id,
+        p1_0.description,
+        p1_0.name 
+    from
+        permissions p1_0
+2026-07-03 23:00:00.600 [main] DEBUG org.hibernate.SQL - 
+    delete 
+    from
+        role_permission 
+    where
+        role_id=?
+2026-07-03 23:00:00.600 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [3]
+2026-07-03 23:00:00.603 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.605 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [3]
+2026-07-03 23:00:00.606 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [8]
+2026-07-03 23:00:00.608 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.609 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [3]
+2026-07-03 23:00:00.610 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [28]
+2026-07-03 23:00:00.611 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.611 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [3]
+2026-07-03 23:00:00.611 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [7]
+2026-07-03 23:00:00.612 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.613 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [3]
+2026-07-03 23:00:00.613 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [15]
+2026-07-03 23:00:00.615 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.615 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [3]
+2026-07-03 23:00:00.615 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [9]
+2026-07-03 23:00:00.616 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.617 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [3]
+2026-07-03 23:00:00.617 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [6]
+2026-07-03 23:00:00.618 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.619 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [3]
+2026-07-03 23:00:00.619 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [13]
+2026-07-03 23:00:00.620 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.621 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [3]
+2026-07-03 23:00:00.621 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [5]
+2026-07-03 23:00:00.623 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.623 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [3]
+2026-07-03 23:00:00.624 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [29]
+2026-07-03 23:00:00.625 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        role_permission
+        (role_id, permission_id) 
+    values
+        (?, ?)
+2026-07-03 23:00:00.626 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [3]
+2026-07-03 23:00:00.626 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (2:BIGINT) <- [14]
+2026-07-03 23:00:00.628 [main] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id,
+        r1_0.description,
+        r1_0.name 
+    from
+        roles r1_0
+2026-07-03 23:00:00.631 [main] INFO  f.d.G.config.DataInitializer - --- Synchronisation terminée avec succès ---

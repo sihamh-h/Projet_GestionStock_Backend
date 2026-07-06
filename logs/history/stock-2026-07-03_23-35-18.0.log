@@ -1,0 +1,3 @@
+2026-07-03 23:35:18.946 [main] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+2026-07-03 23:35:18.952 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
+2026-07-03 23:35:18.955 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 2 ms

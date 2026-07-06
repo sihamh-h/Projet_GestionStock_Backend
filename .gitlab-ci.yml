@@ -20,8 +20,6 @@ test:
     reports:
       junit: target/surefire-reports/TEST-*.xml
 
-
-
 build:
   stage: build
   image: docker:24

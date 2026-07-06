@@ -1,0 +1,4 @@
+2026-07-03 17:12:06.904 [main] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+2026-07-03 17:12:06.908 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
+2026-07-03 17:12:06.909 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 1 ms
+2026-07-03 17:12:06.978 [main] INFO  f.d.G.c.ProductControllerIntegrationTest - Started ProductControllerIntegrationTest in 21.426 seconds (process running for 23.527)

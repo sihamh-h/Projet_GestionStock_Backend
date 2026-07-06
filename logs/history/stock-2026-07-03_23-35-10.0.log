@@ -1,0 +1,1 @@
+2026-07-03 23:35:10.122 [main] WARN  o.h.boot.model.internal.ToOneBinder - HHH000491: 'fr.doranco.GestionStock.model.entity.Movement.product' uses both @NotFound and FetchType.LAZY. @ManyToOne and @OneToOne associations mapped with @NotFound are forced to EAGER fetching.

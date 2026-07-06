@@ -8,5 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface IInvalidatedTokenRepository extends MongoRepository<InvalidatedToken, String> {
         boolean existsByToken(String token);
-
 }
+
+

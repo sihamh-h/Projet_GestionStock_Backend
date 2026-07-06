@@ -40,7 +40,7 @@ public class Supplier extends Auditable {
     private String website;
 
     @Column(length = 14, unique = true)
-    @Pattern(regexp= "^\\d{14}$", message = "SIRET must be exactly 14 digits")
+    @Pattern(regexp= "^$|^\\d{14}$", message = "SIRET must be exactly 14 digits")
     private String siret;
 
     @Column(length = 100)
